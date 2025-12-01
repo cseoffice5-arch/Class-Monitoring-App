@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Class Monitoring App</title>
+
+  <!-- ★★★ PWA Step-2 Added Here ★★★ -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3498db">
+
+  <!-- iOS Support -->
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- Your existing CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Class Monitoring App</h2>
+
+<div class="container">
+  <button onclick="showForm('missed')">Missed Class Entry</button>
+  <button onclick="showForm('makeup')">Makeup Class Entry</button>
+</div>
+
+<!-- -------- MISSED CLASS FORM -------- -->
+<form id="missedForm" class="form hidden">
+  <h3>Missed Class Entry</h3>
+
+  <input type="date" id="m_date">
+  <input type="text" id="m_dept" placeholder="Department">
+  <input type="text" id="m_course" placeholder="Course Code & Title">
+  <input type="text" id="m_teacher" placeholder="Teacher Initial">
+  <input type="text" id="m_reason" placeholder="Reason">
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- -------- MAKEUP CLASS FORM -------- -->
+<form id="makeupForm" class="form hidden">
+  <h3>Makeup Class Entry</h3>
+
+  <input type="date" id="k_schedule">
+  <input type="text" id="k_dept" placeholder="Department">
+  <input type="text" id="k_course" placeholder="Course Code & Title">
+  <input type="text" id="k_teacher" placeholder="Teacher Initial">
+  <input type="date" id="k_date">
+  <input type="text" id="k_time" placeholder="Makeup Time">
+  <input type="text" id="k_room" placeholder="Makeup Room">
+  
+  <select id="k_status">
+    <option value="Completed">Completed</option>
+    <option value="Pending">Pending</option>
+  </select>
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- Your existing JS -->
+<script src="script.js"></script>
+
+<script>
+function showForm(type) {
+    document.getElementById("missedForm").classList.add("hidden");
+    document.getElementById("makeupForm").classList.add("hidden");
+
+    if (type === "missed") {
+        document.getElementById("missedForm").classList.remove("hidden");
+    } else {
+        document.getElementById("makeupForm").classList.remove("hidden");
+    }
+}
+</script>
+
+<!-- ★★★ PWA Step-2: Service Worker Registration ★★★ -->
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("Service Worker Registered!"));
+  }
+</script>
+
+</body>
+</html>
