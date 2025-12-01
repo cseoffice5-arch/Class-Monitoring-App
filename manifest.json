@@ -1,10 +1,10 @@
 {
   "name": "Class Monitoring App",
-  "short_name": "ClassApp",
-  "start_url": "index.html",
+  "short_name": "Class Monitor",
+  "start_url": "https://cseoffice5-arch.github.io/class-monitoring/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#3498db",
+  "theme_color": "#0033a0",
   "icons": [
     {
       "src": "icon-192.png",
