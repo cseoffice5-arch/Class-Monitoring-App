@@ -1,7 +1,7 @@
-/* script.js - final version (dropdowns + submit + watermark) */
+/* script.js - final (uses form-encoded POST to avoid preflight) */
 
-/* ========= SET YOUR DEPLOYED WEB APP URL HERE ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbxJ8pp2zioxwYxKpTkrVdDWudmQUrKXe9KYVosi2EbhuMVdyjqF-1-OzafhtJip_K491w/exec";
+/* ====== SET YOUR DEPLOYED WEB APP URL HERE ====== */
+const API_URL = "https://script.google.com/macros/s/AKfycbypHtIPYMJq_5Hr5FUVJr3pH2ADTOVGfZTMJS_bCEeVjxaIWqR26q5uYSlGZbqJtUk/exec";
 
 /* ---------- TEACHERS array (Full list provided earlier) ---------- */
 /* For brevity here I include the full list as in your earlier request.
@@ -249,24 +249,28 @@ const TIMES = [
 "04:00 PM - 05:30 PM"
 ];
 
-/* ---------- UTILS: populate selects ---------- */
-function populateSelect(id, items, placeholderText) {
+/* ---------- helper to populate selects ---------- */
+function populateSelect(id, list, placeholder) {
   const sel = document.getElementById(id);
-  if (!sel) return;
+  if (!sel) {
+    console.error("Missing select element with id:", id);
+    return;
+  }
   sel.innerHTML = "";
   const ph = document.createElement("option");
   ph.value = "";
-  ph.textContent = placeholderText || "-- Select --";
+  ph.text = placeholder || "-- Select --";
   sel.appendChild(ph);
-  items.forEach(it => {
-    const option = document.createElement("option");
-    option.value = it;
-    option.textContent = it;
-    sel.appendChild(option);
+  list.forEach(v => {
+    const o = document.createElement("option");
+    o.value = v;
+    o.text = v;
+    sel.appendChild(o);
   });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+/* ---------- on load populate dropdowns ---------- */
+window.addEventListener("DOMContentLoaded", () => {
   populateSelect("m_teacher", TEACHERS, "-- Select Teacher --");
   populateSelect("k_teacher", TEACHERS, "-- Select Teacher --");
   populateSelect("m_room", ROOMS, "-- Select Room --");
@@ -274,99 +278,106 @@ window.addEventListener('DOMContentLoaded', () => {
   populateSelect("m_time", TIMES, "-- Select Time Slot --");
   populateSelect("k_time", TIMES, "-- Select Time Slot --");
 
-  // watermark update
-  document.getElementById("m_teacher").addEventListener("change", (e) => {
-    document.getElementById("m_teacher_watermark").textContent =
-      e.target.value ? "Selected teacher: " + e.target.value : "";
-  });
-  document.getElementById("k_teacher").addEventListener("change", (e) => {
-    document.getElementById("k_teacher_watermark").textContent =
-      e.target.value ? "Selected teacher: " + e.target.value : "";
-  });
+  // watermarks
+  const mTeacher = document.getElementById("m_teacher");
+  const kTeacher = document.getElementById("k_teacher");
+  if (mTeacher) mTeacher.addEventListener("change", e => document.getElementById("m_teacher_watermark").textContent = e.target.value ? "Selected teacher: " + e.target.value : "");
+  if (kTeacher) kTeacher.addEventListener("change", e => document.getElementById("k_teacher_watermark").textContent = e.target.value ? "Selected teacher: " + e.target.value : "");
 });
 
-/* ============ SUBMIT MISSED ============ */
-document.getElementById("missedForm").addEventListener("submit", async function(e){
+/* ---------- submit using form-encoded (URLSearchParams) ---------- */
+async function postForm(payload) {
+  // payload should be an object of string values
+  const params = new URLSearchParams();
+  for (const k in payload) {
+    if (payload.hasOwnProperty(k)) params.append(k, payload[k]);
+  }
+
+  const resp = await fetch(API_URL, {
+    method: "POST",
+    body: params // do NOT set Content-Type header; browser will set application/x-www-form-urlencoded
+  });
+
+  // try parse JSON
+  const txt = await resp.text();
+  try {
+    return JSON.parse(txt);
+  } catch (err) {
+    console.error("Response parse error:", txt);
+    return { status: "error", message: "Invalid server response" };
+  }
+}
+
+/* ============ MISSED FORM SUBMIT ============ */
+document.getElementById("missedForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const date = document.getElementById("m_date").value;
-  const department = document.getElementById("m_dept").value.trim();
-  const course = document.getElementById("m_course").value.trim();
-  const room = document.getElementById("m_room").value;
-  const timeSlot = document.getElementById("m_time").value;
-  const teacherInitial = document.getElementById("m_teacher").value;
-  const reason = document.getElementById("m_reason").value.trim();
+  const payload = {
+    action: "save_missed",
+    date: document.getElementById("m_date").value || "",
+    department: document.getElementById("m_dept").value.trim() || "",
+    course: document.getElementById("m_course").value.trim() || "",
+    room: document.getElementById("m_room").value || "",
+    timeSlot: document.getElementById("m_time").value || "",
+    teacherInitial: document.getElementById("m_teacher").value || "",
+    reason: document.getElementById("m_reason").value.trim() || ""
+  };
 
-  if (!date || !department || !course || !room || !teacherInitial) {
+  // validation
+  if (!payload.date || !payload.department || !payload.course || !payload.room || !payload.teacherInitial) {
     alert("Please fill Date, Department, Course, Room and Teacher.");
     return;
   }
 
-  const payload = {
-    action: "save_missed",
-    date, department, course, room, timeSlot, teacherInitial, reason
-  };
-
   try {
-    const resp = await fetch(API_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-    const j = await resp.json();
-    if (j.status === "success") {
+    const result = await postForm(payload);
+    if (result.status === "success") {
       alert("Missed Class Saved!");
-      document.getElementById("missedForm").reset();
+      this.reset();
       document.getElementById("m_teacher_watermark").textContent = "";
     } else {
-      alert("Save failed: " + (j.message || "Unknown"));
+      alert("Save failed: " + (result.message || "Unknown"));
+      console.error("Server error:", result);
     }
   } catch (err) {
-    console.error(err);
+    console.error("Submit error:", err);
     alert("Error sending missed class. See console.");
   }
 });
 
-/* ============ SUBMIT MAKEUP ============ */
-document.getElementById("makeupForm").addEventListener("submit", async function(e){
+/* ============ MAKEUP FORM SUBMIT ============ */
+document.getElementById("makeupForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const scheduleDate = document.getElementById("k_schedule").value;
-  const department = document.getElementById("k_dept").value.trim();
-  const course = document.getElementById("k_course").value.trim();
-  const teacherInitial = document.getElementById("k_teacher").value;
-  const makeupDate = document.getElementById("k_date").value;
-  const makeupTime = document.getElementById("k_time").value;
-  const makeupRoom = document.getElementById("k_room").value;
-  const status = document.getElementById("k_status").value;
+  const payload = {
+    action: "save_makeup",
+    scheduleDate: document.getElementById("k_schedule").value || "",
+    department: document.getElementById("k_dept").value.trim() || "",
+    course: document.getElementById("k_course").value.trim() || "",
+    teacherInitial: document.getElementById("k_teacher").value || "",
+    makeupDate: document.getElementById("k_date").value || "",
+    makeupTime: document.getElementById("k_time").value || "",
+    makeupRoom: document.getElementById("k_room").value || "",
+    status: document.getElementById("k_status").value || ""
+  };
 
-  if (!scheduleDate || !department || !course || !teacherInitial) {
+  if (!payload.scheduleDate || !payload.department || !payload.course || !payload.teacherInitial) {
     alert("Please fill Schedule Date, Department, Course and Teacher.");
     return;
   }
 
-  const payload = {
-    action: "save_makeup",
-    scheduleDate, department, course, teacherInitial,
-    makeupDate, makeupTime, makeupRoom, status
-  };
-
   try {
-    const resp = await fetch(API_URL, {
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-    const j = await resp.json();
-    if (j.status === "success") {
+    const result = await postForm(payload);
+    if (result.status === "success") {
       alert("Makeup Class Saved!");
-      document.getElementById("makeupForm").reset();
+      this.reset();
       document.getElementById("k_teacher_watermark").textContent = "";
     } else {
-      alert("Save failed: " + (j.message || "Unknown"));
+      alert("Save failed: " + (result.message || "Unknown"));
+      console.error("Server error:", result);
     }
   } catch (err) {
-    console.error(err);
+    console.error("Submit error:", err);
     alert("Error sending makeup class. See console.");
   }
 });
