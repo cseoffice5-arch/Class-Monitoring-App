@@ -11,29 +11,40 @@
 
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <header>
     <h1>Class Monitoring App</h1>
-    <p class="subtitle">Missed & Makeup Class Entry — Mobile & Desktop</p>
+    <p class="subtitle">Missed & Conducted Class Entry — Mobile & Desktop</p>
   </header>
 
   <main class="container">
     <div class="controls">
       <button id="btn-missed">Missed Class Entry</button>
-      <button id="btn-makeup">Makeup Class Entry</button>
+      <button id="btn-conducted">Conducted Class Entry</button>
     </div>
 
-    <!-- MISSED CLASS FORM -->
+    <!-- ================================
+         MISSED CLASS FORM
+    ================================= -->
     <form id="missedForm" class="form hidden" autocomplete="off">
       <h2>Missed Class Entry</h2>
 
       <div class="grid">
-        <label>Date<input type="date" id="m_date"></label>
-        <label>Department<input type="text" id="m_dept" placeholder="Department"></label>
+        <label>Date
+          <input type="date" id="m_date">
+        </label>
+
+        <label>Department
+          <input type="text" id="m_dept" placeholder="Department">
+        </label>
       </div>
 
       <div class="grid">
-        <label>Course Code & Title<input type="text" id="m_course" placeholder="e.g. CSE330 - DBMS"></label>
+        <label>Course Code & Title
+          <input type="text" id="m_course" placeholder="e.g. CSE330 - DBMS">
+        </label>
+
         <label>Room
           <select id="m_room"><option value="">-- Select Room --</option></select>
         </label>
@@ -43,57 +54,69 @@
         <label>Time Slot
           <select id="m_time"><option value="">-- Select Time Slot --</option></select>
         </label>
+
         <label>Teacher Initial
           <select id="m_teacher"><option value="">-- Select Teacher --</option></select>
         </label>
       </div>
 
-      <label>Reason<input type="text" id="m_reason" placeholder="Reason (optional)"></label>
+      <label>Reason
+        <input type="text" id="m_reason" placeholder="Reason (optional)">
+      </label>
 
       <div class="watermark" id="m_teacher_watermark"></div>
 
       <button type="submit" class="submit">Submit Missed</button>
     </form>
 
-    <!-- MAKEUP CLASS FORM -->
-    <form id="makeupForm" class="form hidden" autocomplete="off">
-      <h2>Makeup Class Entry</h2>
+
+
+    <!-- ================================
+         CONDUCTED CLASS FORM
+         (corrected naming, IDs, fields)
+    ================================= -->
+    <form id="conductedForm" class="form hidden" autocomplete="off">
+      <h2>Conducted Class Entry</h2>
 
       <div class="grid">
-        <label>Schedule Date<input type="date" id="k_schedule"></label>
-        <label>Department<input type="text" id="k_dept" placeholder="Department"></label>
+        <label>Date
+          <input type="date" id="k_date">
+        </label>
+
+        <label>Department
+          <input type="text" id="k_dept" placeholder="Department">
+        </label>
       </div>
 
       <div class="grid">
-        <label>Course Code & Title<input type="text" id="k_course" placeholder="e.g. CSE330 - DBMS"></label>
+        <label>Course Code & Title
+          <input type="text" id="k_course" placeholder="e.g. CSE330 - DBMS">
+        </label>
+
         <label>Teacher Initial
           <select id="k_teacher"><option value="">-- Select Teacher --</option></select>
         </label>
       </div>
 
       <div class="grid">
-        <label>Makeup Date<input type="date" id="k_date"></label>
-        <label>Makeup Time (slot)
+        <label>Time Slot
           <select id="k_time"><option value="">-- Select Time Slot --</option></select>
+        </label>
+
+        <label>Room
+          <select id="k_room"><option value="">-- Select Room --</option></select>
         </label>
       </div>
 
-      <div class="grid">
-        <label>Makeup Room
-          <select id="k_room"><option value="">-- Select Room --</option></select>
-        </label>
-        <label>Status
-          <select id="k_status">
-            <option value="Completed">Completed</option>
-            <option value="Pending">Pending</option>
-          </select>
-        </label>
-      </div>
+      <label>Remarks
+        <input type="text" id="k_remarks" placeholder="Optional remarks">
+      </label>
 
       <div class="watermark" id="k_teacher_watermark"></div>
 
-      <button type="submit" class="submit">Submit Makeup</button>
+      <button type="submit" class="submit">Submit Conducted</button>
     </form>
+
   </main>
 
   <footer>
@@ -103,13 +126,14 @@
   <script src="script.js" defer></script>
 
   <script>
-    // small helper to show forms
-    document.getElementById('btn-missed').addEventListener('click', ()=> {
+    // Show forms
+    document.getElementById('btn-missed').addEventListener('click', () => {
       document.getElementById('missedForm').classList.remove('hidden');
-      document.getElementById('makeupForm').classList.add('hidden');
+      document.getElementById('conductedForm').classList.add('hidden');
     });
-    document.getElementById('btn-makeup').addEventListener('click', ()=> {
-      document.getElementById('makeupForm').classList.remove('hidden');
+
+    document.getElementById('btn-conducted').addEventListener('click', () => {
+      document.getElementById('conductedForm').classList.remove('hidden');
       document.getElementById('missedForm').classList.add('hidden');
     });
   </script>
@@ -118,9 +142,10 @@
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker registered'))
-      .catch(err => console.warn('SW registration failed', err));
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.warn('SW registration failed', err));
     }
   </script>
+
 </body>
 </html>
