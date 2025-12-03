@@ -24,106 +24,56 @@
       <button id="btn-makeup">Makeup Class Entry</button>
     </div>
 
-    <!-- ================================
-         MISSED CLASS FORM
-    ================================= -->
+    <!-- MISSED CLASS FORM -->
     <form id="missedForm" class="form hidden" autocomplete="off">
       <h2>Missed Class Entry</h2>
 
       <div class="grid">
-        <label>Date
-          <input type="date" id="m_date">
-        </label>
-
-        <label>Department
-          <input type="text" id="m_dept" placeholder="Department">
-        </label>
+        <label>Date<input type="date" id="m_date"></label>
+        <label>Department<input type="text" id="m_dept" placeholder="Department"></label>
       </div>
 
       <div class="grid">
-        <label>Course Code & Title
-          <input type="text" id="m_course" placeholder="e.g. CSE330 - DBMS">
-        </label>
-
-        <label>Room
-          <select id="m_room"><option value="">-- Select Room --</option></select>
-        </label>
+        <label>Course Code & Title<input type="text" id="m_course" placeholder="e.g. CSE330 - DBMS"></label>
+        <label>Room<select id="m_room"></select></label>
       </div>
 
       <div class="grid">
-        <label>Time Slot
-          <select id="m_time"><option value="">-- Select Time Slot --</option></select>
-        </label>
-
-        <label>Teacher Initial
-          <select id="m_teacher"><option value="">-- Select Teacher --</option></select>
-        </label>
+        <label>Time Slot<select id="m_time"></select></label>
+        <label>Teacher Initial<select id="m_teacher"></select></label>
       </div>
 
-      <label>Reason
-        <input type="text" id="m_reason" placeholder="Reason (optional)">
-      </label>
-
+      <label>Reason<input type="text" id="m_reason" placeholder="Reason (optional)"></label>
       <div class="watermark" id="m_teacher_watermark"></div>
-
       <button type="submit" class="submit">Submit Missed</button>
     </form>
 
-    <!-- ================================
-         MAKEUP CLASS FORM
-    ================================= -->
+    <!-- MAKEUP CLASS FORM -->
     <form id="makeupForm" class="form hidden" autocomplete="off">
       <h2>Makeup Class Entry</h2>
 
       <div class="grid">
-        <label>Schedule Date
-          <input type="date" id="k_schedule">
-        </label>
-
-        <label>Department
-          <input type="text" id="k_dept_makeup" placeholder="Department">
-        </label>
+        <label>Schedule Date<input type="date" id="k_schedule"></label>
+        <label>Department<input type="text" id="k_dept_m" placeholder="Department"></label>
       </div>
 
       <div class="grid">
-        <label>Course Code & Title
-          <input type="text" id="k_course" placeholder="e.g. CSE330 - DBMS">
-        </label>
-
-        <label>Teacher Initial
-          <select id="k_teacher"><option value="">-- Select Teacher --</option></select>
-        </label>
+        <label>Course Code & Title<input type="text" id="k_course" placeholder="e.g. CSE330 - DBMS"></label>
+        <label>Teacher Initial<select id="k_teacher"></select></label>
       </div>
 
       <div class="grid">
-        <label>Makeup Date
-          <input type="date" id="k_date">
-        </label>
-
-        <label>Makeup Time (slot)
-          <select id="k_time"><option value="">-- Select Time Slot --</option></select>
-        </label>
+        <label>Makeup Date<input type="date" id="k_date"></label>
+        <label>Makeup Time<select id="k_time"></select></label>
       </div>
 
       <div class="grid">
-        <label>Makeup Room
-          <select id="k_room"><option value="">-- Select Room --</option></select>
-        </label>
-
-        <label>Status
-          <select id="k_status">
-            <option value="Completed">Completed</option>
-            <option value="Pending">Pending</option>
-          </select>
-        </label>
+        <label>Makeup Room<select id="k_room"></select></label>
+        <label>Status<select id="k_status"><option value="Completed">Completed</option><option value="Pending">Pending</option></select></label>
       </div>
 
-      <label>Remarks
-        <input type="text" id="k_remarks" placeholder="Optional remarks">
-      </label>
-
+      <label>Remarks<input type="text" id="k_remarks" placeholder="if Completed provide class attendance or Record Link"></label>
       <div class="watermark" id="k_teacher_watermark"></div>
-
       <button type="submit" class="submit">Submit Makeup</button>
     </form>
   </main>
