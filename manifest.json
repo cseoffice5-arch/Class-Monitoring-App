@@ -1,20 +1,21 @@
 {
-  "name": "Class Monitoring App",
-  "short_name": "Class Monitor",
-  "start_url": "https://cseoffice5-arch.github.io/class-monitoring/index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0033a0",
+  "short_name": "ClassMon",
+  "name": "CSE Class Monitoring",
   "icons": [
     {
       "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "192x192"
     },
     {
       "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "512x512"
     }
-  ]
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#317EFB",
+  "orientation": "portrait-primary"
 }

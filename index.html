@@ -1,84 +1,126 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Class Monitoring App</title>
 
-  <!-- ★★★ PWA Step-2 Added Here ★★★ -->
+  <!-- PWA manifest -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#3498db">
+  <meta name="theme-color" content="#317EFB"/>
 
-  <!-- iOS Support -->
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
-  <!-- Your existing CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header>
+    <h1>Class Monitoring App</h1>
+    <p class="subtitle">Missed & Makeup Class Entry — Mobile & Desktop</p>
+  </header>
 
-<h2>Class Monitoring App</h2>
+  <main class="container">
+    <div class="controls">
+      <button id="btn-missed">Missed Class Entry</button>
+      <button id="btn-makeup">Makeup Class Entry</button>
+    </div>
 
-<div class="container">
-  <button onclick="showForm('missed')">Missed Class Entry</button>
-  <button onclick="showForm('makeup')">Makeup Class Entry</button>
-</div>
+    <!-- MISSED CLASS FORM -->
+    <form id="missedForm" class="form hidden" autocomplete="off">
+      <h2>Missed Class Entry</h2>
 
-<!-- -------- MISSED CLASS FORM -------- -->
-<form id="missedForm" class="form hidden">
-  <h3>Missed Class Entry</h3>
+      <div class="grid">
+        <label>Date<input type="date" id="m_date"></label>
+        <label>Department<input type="text" id="m_dept" placeholder="Department"></label>
+      </div>
 
-  <input type="date" id="m_date">
-  <input type="text" id="m_dept" placeholder="Department">
-  <input type="text" id="m_course" placeholder="Course Code & Title">
-  <input type="text" id="m_teacher" placeholder="Teacher Initial">
-  <input type="text" id="m_reason" placeholder="Reason">
+      <div class="grid">
+        <label>Course Code & Title<input type="text" id="m_course" placeholder="e.g. CSE330 - DBMS"></label>
+        <label>Room
+          <select id="m_room"><option value="">-- Select Room --</option></select>
+        </label>
+      </div>
 
-  <button type="submit">Submit</button>
-</form>
+      <div class="grid">
+        <label>Time Slot
+          <select id="m_time"><option value="">-- Select Time Slot --</option></select>
+        </label>
+        <label>Teacher Initial
+          <select id="m_teacher"><option value="">-- Select Teacher --</option></select>
+        </label>
+      </div>
 
-<!-- -------- MAKEUP CLASS FORM -------- -->
-<form id="makeupForm" class="form hidden">
-  <h3>Makeup Class Entry</h3>
+      <label>Reason<input type="text" id="m_reason" placeholder="Reason (optional)"></label>
 
-  <input type="date" id="k_schedule">
-  <input type="text" id="k_dept" placeholder="Department">
-  <input type="text" id="k_course" placeholder="Course Code & Title">
-  <input type="text" id="k_teacher" placeholder="Teacher Initial">
-  <input type="date" id="k_date">
-  <input type="text" id="k_time" placeholder="Makeup Time">
-  <input type="text" id="k_room" placeholder="Makeup Room">
-  
-  <select id="k_status">
-    <option value="Completed">Completed</option>
-    <option value="Pending">Pending</option>
-  </select>
+      <div class="watermark" id="m_teacher_watermark"></div>
 
-  <button type="submit">Submit</button>
-</form>
+      <button type="submit" class="submit">Submit Missed</button>
+    </form>
 
-<!-- Your existing JS -->
-<script src="script.js"></script>
+    <!-- MAKEUP CLASS FORM -->
+    <form id="makeupForm" class="form hidden" autocomplete="off">
+      <h2>Makeup Class Entry</h2>
 
-<script>
-function showForm(type) {
-    document.getElementById("missedForm").classList.add("hidden");
-    document.getElementById("makeupForm").classList.add("hidden");
+      <div class="grid">
+        <label>Schedule Date<input type="date" id="k_schedule"></label>
+        <label>Department<input type="text" id="k_dept" placeholder="Department"></label>
+      </div>
 
-    if (type === "missed") {
-        document.getElementById("missedForm").classList.remove("hidden");
-    } else {
-        document.getElementById("makeupForm").classList.remove("hidden");
+      <div class="grid">
+        <label>Course Code & Title<input type="text" id="k_course" placeholder="e.g. CSE330 - DBMS"></label>
+        <label>Teacher Initial
+          <select id="k_teacher"><option value="">-- Select Teacher --</option></select>
+        </label>
+      </div>
+
+      <div class="grid">
+        <label>Makeup Date<input type="date" id="k_date"></label>
+        <label>Makeup Time (slot)
+          <select id="k_time"><option value="">-- Select Time Slot --</option></select>
+        </label>
+      </div>
+
+      <div class="grid">
+        <label>Makeup Room
+          <select id="k_room"><option value="">-- Select Room --</option></select>
+        </label>
+        <label>Status
+          <select id="k_status">
+            <option value="Completed">Completed</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="watermark" id="k_teacher_watermark"></div>
+
+      <button type="submit" class="submit">Submit Makeup</button>
+    </form>
+  </main>
+
+  <footer>
+    <small>Built for Daffodil International University — Class Monitoring</small>
+  </footer>
+
+  <script src="script.js" defer></script>
+
+  <script>
+    // small helper to show forms
+    document.getElementById('btn-missed').addEventListener('click', ()=> {
+      document.getElementById('missedForm').classList.remove('hidden');
+      document.getElementById('makeupForm').classList.add('hidden');
+    });
+    document.getElementById('btn-makeup').addEventListener('click', ()=> {
+      document.getElementById('makeupForm').classList.remove('hidden');
+      document.getElementById('missedForm').classList.add('hidden');
+    });
+  </script>
+
+  <!-- register service worker for PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch(err => console.warn('SW registration failed', err));
     }
-}
-</script>
-
-<!-- ★★★ PWA Step-2: Service Worker Registration ★★★ -->
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("Service Worker Registered!"));
-  }
-</script>
-
+  </script>
 </body>
 </html>
