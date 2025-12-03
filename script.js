@@ -3,8 +3,7 @@
    ---------------------------------------------------- */
 
 /* ====== SET YOUR DEPLOYED WEB APP URL ====== */
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbypHtIPYMJq_5Hr5FUVJr3pH2ADTOVGfZTMJS_bCEeVjxaIWqR26q5uYSlGZbqJtUk/exec";
+const API_URL ="https://script.google.com/macros/s/AKfycbypHtIPYMJq_5Hr5FUVJr3pH2ADTOVGfZTMJS_bCEeVjxaIWqR26q5uYSlGZbqJtUk/exec";
 
 
 /* ---------- TEACHERS array (Full, unchanged) ---------- */
@@ -138,22 +137,22 @@ document.getElementById("missedForm").addEventListener("submit", async function 
 });
 
 
-/* ----------------------------------------------------
-   MAKEUP CLASS SUBMIT
+/* ---------------------------------------------------- 
+   MAKEUP CLASS SUBMIT 
    ---------------------------------------------------- */
-document.getElementById("conductedForm").addEventListener("submit", async function (e) {
+document.getElementById("makeupForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const payload = {
-    action: "save_conducted",
-    entryType: "Conducted",
+    action: "save_makeup",
+    entryType: "Makeup",
     date: document.getElementById("k_date").value.trim(),
     department: document.getElementById("k_dept").value.trim(),
     course: document.getElementById("k_course").value.trim(),
     room: document.getElementById("k_room").value,
     timeSlot: document.getElementById("k_time").value,
     teacherInitial: document.getElementById("k_teacher").value,
-    remarks: document.getElementById("k_remarks").value.trim()
+    remarks: document.getElementById("k_remarks") ? document.getElementById("k_remarks").value.trim() : ""
   };
 
   if (!payload.date || !payload.department || !payload.course || !payload.room || !payload.teacherInitial) {
