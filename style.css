@@ -1,5 +1,3 @@
-/* style.css - clean responsive styling */
-
 :root{
   --accent:#317efb;
   --bg:#f4f6f9;
@@ -57,6 +55,20 @@ input[type="text"], input[type="date"], select{
   border:1px solid #e0e6ef;
   background:#fff;
   font-size:14px;
+}
+
+.filter {
+  margin-top:8px;
+  padding:8px 10px;
+  font-size:13px;
+  border-radius:6px;
+  border:1px solid #e0e6ef;
+  width:100%;
+}
+
+select[size] { /* show as list for easier mobile selection; adjust size as needed */
+  padding:6px;
+  height:auto;
 }
 
 .watermark{color:#888; font-size:13px; margin:8px 0 12px 2px}
