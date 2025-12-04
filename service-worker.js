@@ -1,4 +1,4 @@
-const CACHE_NAME = 'class-monitor-v1';
+const CACHE_NAME = 'Class Monitoring App';
 const ASSETS = [
   '/',
   '/index.html',
