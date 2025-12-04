@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Class Monitoring App</title>
+  <title>Class Monitoring — DIU Style</title>
 
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#317EFB"/>
@@ -12,102 +12,107 @@
 </head>
 
 <body>
-  <header>
-    <h1>Class Monitoring App</h1>
-    <p class="subtitle">Missed & Makeup Class Entry — Mobile & Desktop</p>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">CM</div>
+      <div>
+        <h1>Class Monitoring</h1>
+        <div class="sub">Missed & Makeup — Daffodil IU</div>
+      </div>
+    </div>
   </header>
 
-  <main class="container">
-    <div class="controls">
-      <button id="btn-missed">Missed Class Entry</button>
-      <button id="btn-makeup">Makeup Class Entry</button>
-    </div>
+  <nav class="tabs">
+    <button id="tab-missed" class="tab active">Missed Class</button>
+    <button id="tab-makeup" class="tab">Makeup Class</button>
+  </nav>
 
-    <!-- MISSED CLASS FORM -->
-    <form id="missedForm" class="form hidden" autocomplete="off">
+  <main class="container">
+    <!-- MISSED -->
+    <form id="missedForm" class="card" autocomplete="off">
       <h2>Missed Class Entry</h2>
 
-      <div class="grid">
+      <div class="row">
         <label>Date
           <input type="date" id="m_date">
         </label>
 
         <label>Department
-          <input type="text" id="m_dept" placeholder="Department">
+          <input type="text" id="m_dept" placeholder="e.g. CSE">
         </label>
       </div>
 
-      <div class="grid">
+      <div class="row">
         <label>Course Code & Title
           <input type="text" id="m_course" placeholder="e.g. CSE330 - DBMS">
         </label>
 
         <label>Room
-          <!-- filter + select -->
           <input type="text" id="m_room_filter" class="filter" placeholder="filter rooms...">
-          <select id="m_room" size="6"></select>
+          <select id="m_room" size="6" class="select-list"></select>
         </label>
       </div>
 
-      <div class="grid">
+      <div class="row">
         <label>Time Slot
           <input type="text" id="m_time_filter" class="filter" placeholder="filter times...">
-          <select id="m_time" size="6"></select>
+          <select id="m_time" size="4" class="select-list"></select>
         </label>
 
         <label>Teacher Initial
           <input type="text" id="m_teacher_filter" class="filter" placeholder="filter teachers...">
-          <select id="m_teacher" size="6"></select>
+          <select id="m_teacher" size="6" class="select-list"></select>
         </label>
       </div>
 
       <label>Reason
         <input type="text" id="m_reason" placeholder="Reason (optional)">
       </label>
+
       <div class="watermark" id="m_teacher_watermark"></div>
-      <button type="submit" class="submit">Submit Missed</button>
+      <button type="submit" class="btn primary full">Submit Missed</button>
     </form>
 
-    <!-- MAKEUP CLASS FORM -->
-    <form id="makeupForm" class="form hidden" autocomplete="off">
+    <!-- MAKEUP -->
+    <form id="makeupForm" class="card hidden" autocomplete="off">
       <h2>Makeup Class Entry</h2>
 
-      <div class="grid">
+      <div class="row">
         <label>Schedule Date
           <input type="date" id="k_schedule">
         </label>
 
         <label>Department
-          <input type="text" id="k_dept_m" placeholder="Department">
+          <input type="text" id="k_dept_m" placeholder="e.g. CSE">
         </label>
       </div>
 
-      <div class="grid">
+      <div class="row">
         <label>Course Code & Title
           <input type="text" id="k_course" placeholder="e.g. CSE330 - DBMS">
         </label>
 
         <label>Teacher Initial
           <input type="text" id="k_teacher_filter" class="filter" placeholder="filter teachers...">
-          <select id="k_teacher" size="6"></select>
+          <select id="k_teacher" size="6" class="select-list"></select>
         </label>
       </div>
 
-      <div class="grid">
+      <div class="row">
         <label>Makeup Date
           <input type="date" id="k_date">
         </label>
 
         <label>Makeup Time
           <input type="text" id="k_time_filter" class="filter" placeholder="filter times...">
-          <select id="k_time" size="6"></select>
+          <select id="k_time" size="4" class="select-list"></select>
         </label>
       </div>
 
-      <div class="grid">
+      <div class="row">
         <label>Makeup Room
           <input type="text" id="k_room_filter" class="filter" placeholder="filter rooms...">
-          <select id="k_room" size="6"></select>
+          <select id="k_room" size="6" class="select-list"></select>
         </label>
 
         <label>Status
@@ -119,38 +124,44 @@
       </div>
 
       <label>Remarks
-        <input type="text" id="k_remarks" placeholder="if Completed provide class attendance or Record Link">
+        <input type="text" id="k_remarks" placeholder="If completed add attendance / record link">
       </label>
+
       <div class="watermark" id="k_teacher_watermark"></div>
-      <button type="submit" class="submit">Submit Makeup</button>
+      <button type="submit" class="btn primary full">Submit Makeup</button>
     </form>
   </main>
 
-  <footer>
+  <footer class="footer">
     <small>Built for Daffodil International University — Class Monitoring</small>
   </footer>
 
   <script src="script.js" defer></script>
 
   <script>
-    // Show forms
-    document.getElementById('btn-missed').addEventListener('click', () => {
-      document.getElementById('missedForm').classList.remove('hidden');
-      document.getElementById('makeupForm').classList.add('hidden');
+    // Tab behavior
+    const tMissed = document.getElementById('tab-missed');
+    const tMakeup = document.getElementById('tab-makeup');
+    const missedForm = document.getElementById('missedForm');
+    const makeupForm = document.getElementById('makeupForm');
+
+    tMissed.addEventListener('click', () => {
+      tMissed.classList.add('active'); tMakeup.classList.remove('active');
+      missedForm.classList.remove('hidden'); makeupForm.classList.add('hidden');
     });
 
-    document.getElementById('btn-makeup').addEventListener('click', () => {
-      document.getElementById('makeupForm').classList.remove('hidden');
-      document.getElementById('missedForm').classList.add('hidden');
+    tMakeup.addEventListener('click', () => {
+      tMakeup.classList.add('active'); tMissed.classList.remove('active');
+      makeupForm.classList.remove('hidden'); missedForm.classList.add('hidden');
     });
   </script>
 
-  <!-- Service worker registration -->
+  <!-- register service worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch(err => console.warn('SW registration failed', err));
+        .then(()=> console.log('SW registered'))
+        .catch(e=> console.warn('SW failed', e));
     }
   </script>
 </body>
