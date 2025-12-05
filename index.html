@@ -1,118 +1,231 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Class Monitoring App — DIU Style</title>
+  <title>Class Monitoring App</title>
 
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#317EFB"/>
-
+  <meta name="theme-color" content="#006A4E" />
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background: #f2f6f9;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #006A4E;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 0 0 20px 20px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 550px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .controls button {
+      flex: 1;
+      padding: 12px;
+      background: #006A4E;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .form {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      font-size: 14px;
+    }
+
+    .submit {
+      width: 100%;
+      padding: 12px;
+      background: #006A4E;
+      color: white;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .watermark {
+      text-align: right;
+      font-size: 11px;
+      color: #999;
+      margin-top: -5px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo"> DIU-Sarower </div>
-      <div>
-        <h1>Class Monitoring App</h1>
-        <div class="sub">Missed & Makeup Information</div>
-      </div>
-    </div>
+
+  <header>
+    <h1>Class Monitoring App</h1>
+    <p class="subtitle">Missed & Makeup Class Entry — DIU</p>
   </header>
 
-  <nav class="tabs">
-    <button id="tab-missed" class="tab active">Missed Class</button>
-    <button id="tab-makeup" class="tab">Makeup Class</button>
-  </nav>
-
   <main class="container">
-    <!-- MISSED -->
-    <form id="missedForm" class="card" autocomplete="off">
+
+    <!-- Button Controls -->
+    <div class="controls">
+      <button id="btn-missed">Missed Class</button>
+      <button id="btn-makeup">Makeup Class</button>
+    </div>
+
+    <!-- ===============================
+         MISSED CLASS FORM
+    =============================== -->
+    <form id="missedForm" class="form hidden" autocomplete="off">
       <h2>Missed Class Entry</h2>
 
-      <div class="row">
+      <div class="grid">
         <label>Date
           <input type="date" id="m_date">
         </label>
 
         <label>Department
-          <input type="text" id="m_dept" placeholder="e.g. CSE">
+          <input type="text" id="m_dept" placeholder="CSE / EEE">
         </label>
       </div>
 
-      <div class="row">
+      <div class="grid">
         <label>Course Code & Title
-          <input type="text" id="m_course" placeholder="e.g. CSE330 - DBMS">
+          <input type="text" id="m_course" placeholder="CSE330 - DBMS">
         </label>
 
-        <label>Room
-          <input type="text" id="m_room_filter" class="filter" placeholder="filter rooms...">
-          <select id="m_room" size="6" class="select-list"></select>
+        <label>Time Slot
+          <select id="m_time">
+            <option value="">-- Select Time Slot --</option>
+          </select>
         </label>
       </div>
 
-      <div class="row">
-        <label>Time Slot
-          <input type="text" id="m_time_filter" class="filter" placeholder="filter times...">
-          <select id="m_time" size="4" class="select-list"></select>
+      <div class="grid">
+        <label>Room
+          <select id="m_room">
+            <option value="">-- Select Room --</option>
+          </select>
         </label>
 
         <label>Teacher Initial
-          <input type="text" id="m_teacher_filter" class="filter" placeholder="filter teachers...">
-          <select id="m_teacher" size="6" class="select-list"></select>
+          <select id="m_teacher">
+            <option value="">-- Select Teacher --</option>
+          </select>
         </label>
       </div>
 
       <label>Reason
-        <input type="text" id="m_reason" placeholder="Reason (optional)">
+        <input type="text" id="m_reason" placeholder="Optional reason">
       </label>
 
       <div class="watermark" id="m_teacher_watermark"></div>
-      <button type="submit" class="btn primary full">Submit Missed</button>
+
+      <button type="submit" class="submit">Submit Missed Class</button>
     </form>
 
-    <!-- MAKEUP -->
-    <form id="makeupForm" class="card hidden" autocomplete="off">
+    <!-- ===============================
+         MAKEUP CLASS FORM
+    =============================== -->
+    <form id="makeupForm" class="form hidden" autocomplete="off">
       <h2>Makeup Class Entry</h2>
 
-      <div class="row">
+      <div class="grid">
         <label>Schedule Date
           <input type="date" id="k_schedule">
         </label>
 
         <label>Department
-          <input type="text" id="k_dept_m" placeholder="e.g. CSE">
+          <input type="text" id="k_dept_makeup" placeholder="CSE / EEE">
         </label>
       </div>
 
-      <div class="row">
+      <div class="grid">
         <label>Course Code & Title
-          <input type="text" id="k_course" placeholder="e.g. CSE330 - DBMS">
+          <input type="text" id="k_course" placeholder="CSE330 - DBMS">
         </label>
 
         <label>Teacher Initial
-          <input type="text" id="k_teacher_filter" class="filter" placeholder="filter teachers...">
-          <select id="k_teacher" size="6" class="select-list"></select>
+          <select id="k_teacher">
+            <option value="">-- Select Teacher --</option>
+          </select>
         </label>
       </div>
 
-      <div class="row">
+      <div class="grid">
         <label>Makeup Date
           <input type="date" id="k_date">
         </label>
 
         <label>Makeup Time
-          <input type="text" id="k_time_filter" class="filter" placeholder="filter times...">
-          <select id="k_time" size="4" class="select-list"></select>
+          <select id="k_time">
+            <option value="">-- Select Time Slot --</option>
+          </select>
         </label>
       </div>
 
-      <div class="row">
+      <div class="grid">
         <label>Makeup Room
-          <input type="text" id="k_room_filter" class="filter" placeholder="filter rooms...">
-          <select id="k_room" size="6" class="select-list"></select>
+          <select id="k_room">
+            <option value="">-- Select Room --</option>
+          </select>
         </label>
 
         <label>Status
@@ -124,45 +237,40 @@
       </div>
 
       <label>Remarks
-        <input type="text" id="k_remarks" placeholder="If completed add attendance / record link">
+        <input type="text" id="k_remarks" placeholder="If completed provide class attendance/class Record">
       </label>
 
       <div class="watermark" id="k_teacher_watermark"></div>
-      <button type="submit" class="btn primary full">Submit Makeup</button>
+
+      <button type="submit" class="submit">Submit Makeup Class</button>
     </form>
+
   </main>
 
-  <footer class="footer">
-    <small>Built for Daffodil International University — Class Monitoring App</small>
+  <footer>
+    <small>© DIU – Class Monitoring System</small>
   </footer>
 
   <script src="script.js" defer></script>
 
   <script>
-    // Tab behavior
-    const tMissed = document.getElementById('tab-missed');
-    const tMakeup = document.getElementById('tab-makeup');
-    const missedForm = document.getElementById('missedForm');
-    const makeupForm = document.getElementById('makeupForm');
+    document.getElementById("btn-missed").onclick = () => {
+      document.getElementById("missedForm").classList.remove("hidden");
+      document.getElementById("makeupForm").classList.add("hidden");
+    };
 
-    tMissed.addEventListener('click', () => {
-      tMissed.classList.add('active'); tMakeup.classList.remove('active');
-      missedForm.classList.remove('hidden'); makeupForm.classList.add('hidden');
-    });
-
-    tMakeup.addEventListener('click', () => {
-      tMakeup.classList.add('active'); tMissed.classList.remove('active');
-      makeupForm.classList.remove('hidden'); missedForm.classList.add('hidden');
-    });
+    document.getElementById("btn-makeup").onclick = () => {
+      document.getElementById("makeupForm").classList.remove("hidden");
+      document.getElementById("missedForm").classList.add("hidden");
+    };
   </script>
 
-  <!-- register service worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(()=> console.log('SW registered'))
-        .catch(e=> console.warn('SW failed', e));
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
     }
   </script>
+
 </body>
+
 </html>
