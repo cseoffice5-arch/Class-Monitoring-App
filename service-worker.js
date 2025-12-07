@@ -1,30 +1,42 @@
-const CACHE_NAME = 'Class Monitoring App';
+const CACHE_NAME = "class-monitor-v2";
+
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  "./",
+  "./index.html",
+  "./style.css",
+  "./script.js",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-self.addEventListener('install', (evt) => {
-  evt.waitUntil(
+// INSTALL
+self.addEventListener("install", (event) => {
+  event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (evt) => {
-  evt.waitUntil(self.clients.claim());
+// ACTIVATE
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('fetch', (evt) => {
-  const req = evt.request;
-  if (req.mode === 'navigate') {
-    evt.respondWith(fetch(req).catch(() => caches.match('/index.html')));
+// FETCH
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+
+  // For navigation pages
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(() => caches.match("./index.html"))
+    );
     return;
   }
-  evt.respondWith(caches.match(req).then((cached) => cached || fetch(req)));
+
+  // For all assets
+  event.respondWith(
+    caches.match(request).then((cached) => cached || fetch(request))
+  );
 });

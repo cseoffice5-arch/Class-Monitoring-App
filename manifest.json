@@ -1,13 +1,21 @@
 {
   "short_name": "ClassMon",
-  "name": "CSE Class Monitoring",
+  "name": "CSE Class Monitoring App",
   "icons": [
-    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192" },
-    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ],
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#317EFB",
+  "background_color": "#0A7E4A",
+  "theme_color": "#0A7E4A",
   "orientation": "portrait-primary"
 }
