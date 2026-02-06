@@ -326,3 +326,35 @@ footer small{
 .total-missed {
   display: none !important;
 }
+/* ======== MOBILE SPACING FIX FOR MISSED & MAKEUP ======== */
+@media (max-width: 768px) {
+
+  /* Reduce space between all form sections */
+  .form {
+    padding: 10px !important;
+    margin-top: 6px !important;
+  }
+
+  /* Reduce gap between grid rows */
+  .form .grid {
+    gap: 6px !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Reduce space under each label/input block */
+  .form label {
+    margin-bottom: 6px !important;
+  }
+
+  /* Reduce input/select height slightly */
+  .form input,
+  .form select {
+    padding: 6px 8px !important;
+  }
+
+  /* Reduce big heading gap */
+  .form h2 {
+    margin-bottom: 6px !important;
+    margin-top: 2px !important;
+  }
+}
