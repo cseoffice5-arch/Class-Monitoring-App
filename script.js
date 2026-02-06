@@ -1,5 +1,5 @@
-/* =========================================================
-   CONFIG (GITHUB SAFE)
+/* ========================================================= 
+   CONFIG (GITHUB SAFE — NO LOGIN)
 ========================================================= */
 const API_URL =
   "https://script.google.com/macros/s/AKfycbwFlDrplCzmYeykNATmV8mR86RZmAaJpC8zJTi_pfpjMiMGgtdp8ZkwN8c2k4fFXbaSUA/exec";
@@ -27,11 +27,11 @@ function formatDateISO(d) {
 }
 
 /* =========================================================
-   BOOT (AUTO-OPEN APP — NO LOGIN)
+   BOOT (AUTO-OPEN APP — LOGIN REMOVED)
 ========================================================= */
 window.addEventListener("DOMContentLoaded", () => {
 
-  // Make sure app is visible (your HTML hides it initially)
+  // FORCE SHOW APP, HIDE LOGIN SCREEN
   if (qid("appRoot")) qid("appRoot").style.display = "block";
   if (qid("loginScreen")) qid("loginScreen").style.display = "none";
 
@@ -68,7 +68,7 @@ function loadDashboard() {
 }
 
 /* =========================================================
-   ROUTINE MASTER DROPDOWNS (FIXED FOR GITHUB)
+   ROUTINE MASTER DROPDOWNS (GITHUB FIXED)
 ========================================================= */
 async function refreshRoutineDropdowns() {
   try {
