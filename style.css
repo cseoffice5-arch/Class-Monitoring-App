@@ -1,0 +1,295 @@
+/* ================= ROOT ================= */
+:root{
+  --accent:#317efb;
+  --accent-2:#1b9a59;
+  --accent-3:#f97316;
+  --bg:#f4f6f9;
+  --card:#ffffff;
+  --radius:14px;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+/* ================= RESET ================= */
+*{
+  box-sizing:border-box;
+}
+
+html, body{
+  margin:0;
+  padding:0;
+  width:100%;
+  overflow-x:hidden;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+}
+
+.hidden{ display:none !important; }
+
+/* ================= DASHBOARD ================= */
+.dashboard{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  padding:14px 12px;
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.dashboard .card{
+  background:var(--card);
+  padding:14px 10px;
+  border-radius:16px;
+  min-width:150px;
+  text-align:center;
+  box-shadow:var(--shadow);
+  transition:.25s ease;
+}
+
+.dashboard .card:hover{
+  transform:translateY(-2px);
+}
+
+.dashboard .card{
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.3px;
+  color:#64748b;
+}
+
+.dashboard .card span{
+  display:block;
+  margin-top:6px;
+  font-size:22px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+/* Color coding */
+.dashboard .total-missed span{ color:#2563eb; }
+.dashboard .card:nth-child(2) span{ color:#16a34a; }
+.dashboard .card:nth-child(3) span{ color:#f97316; }
+.dashboard .card:nth-child(4) span{ color:#7c3aed; }
+
+/* ================= HEADER ================= */
+header{
+  text-align:center;
+  padding:26px 14px 30px;
+  background:linear-gradient(135deg,#317efb,#1b9a59);
+  color:#fff;
+}
+
+header h1{
+  margin:0;
+  font-size:28px;
+  font-weight:900;
+  background:linear-gradient(90deg,#fff,#e0f2fe,#bbf7d0);
+  background-size:300% 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:titleGradient 6s ease infinite;
+}
+
+header .subtitle{
+  margin-top:6px;
+  font-size:14px;
+  font-weight:600;
+  opacity:.95;
+}
+
+/* ================= LOGO ================= */
+.app-logo{
+  width:88px;
+  height:88px;
+  object-fit:contain;
+  margin-bottom:6px;
+  animation:logoPulse 3s ease-in-out infinite;
+}
+
+/* ================= CONTAINER ================= */
+.container{
+  max-width:880px;
+  margin:20px auto;
+  background:var(--card);
+  padding:20px;
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+
+/* ================= CONTROLS (APP BUTTONS) ================= */
+.controls{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.controls button{
+  flex:1;
+  background:linear-gradient(135deg,var(--accent),#245bda);
+  color:#fff;
+  border:none;
+  padding:14px 18px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:14px;
+  min-height:50px;
+  box-shadow:0 8px 18px rgba(49,126,251,.35);
+  transition:.25s ease;
+}
+
+.controls button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 26px rgba(49,126,251,.45);
+}
+
+.controls button:active{
+  transform:scale(.96);
+}
+
+/* ================= FORMS ================= */
+.form{ margin-top:16px; }
+
+.grid{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+label{
+  flex:1 1 240px;
+  font-size:13px;
+  font-weight:600;
+  color:#334155;
+}
+
+input, select{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid #d1d5db;
+  font-size:14px;
+  background:#f8fafc;
+  transition:.2s ease;
+}
+
+input:focus, select:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(49,126,251,.15);
+}
+
+/* ================= SUBMIT ================= */
+.submit{
+  background:linear-gradient(135deg,var(--accent-2),#0f766e);
+  color:#fff;
+  font-weight:800;
+  margin-top:14px;
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 8px 18px rgba(27,154,89,.35);
+}
+
+.submit:hover{
+  transform:translateY(-2px);
+}
+
+/* ================= TABLE ================= */
+.table-wrap{
+  overflow-x:auto;
+  margin-top:14px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+th, td{
+  padding:10px;
+  font-size:13px;
+  border-bottom:1px solid #e5e7eb;
+}
+
+th{
+  background:#f1f5f9;
+  font-weight:700;
+  color:#0f172a;
+}
+
+tbody tr:hover td{
+  background:#f8fafc;
+}
+
+/* ================= FOOTER ================= */
+footer{
+  margin:22px auto;
+  text-align:center;
+  padding:16px 12px;
+  max-width:880px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#317efb,#1b9a59,#f97316);
+  background-size:300% 300%;
+  animation:footerGradient 6s ease infinite;
+}
+
+footer small{
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width:600px){
+  header h1{ font-size:22px; }
+  .app-logo{ width:70px;height:70px; }
+
+  .grid{ flex-direction:column; }
+
+  .dashboard .card{
+    min-width:140px;
+  }
+
+  button,input,select{
+    font-size:16px;
+  }
+}
+
+/* ================= DARK MODE ================= */
+@media (prefers-color-scheme: dark){
+  body{ background:#020617; color:#e5e7eb; }
+  header{ background:#020617; }
+  .container,.card,table{ background:#020617; }
+  input,select{
+    background:#020617;
+    border:1px solid #334155;
+    color:#e5e7eb;
+  }
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes footerGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+@keyframes titleGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+@keyframes logoPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+}
