@@ -31,23 +31,15 @@ function formatDateISO(d) {
 ========================================================= */
 window.addEventListener("DOMContentLoaded", () => {
 
-  // FORCE SHOW APP, HIDE LOGIN SCREEN
   if (qid("appRoot")) qid("appRoot").style.display = "block";
   if (qid("loginScreen")) qid("loginScreen").style.display = "none";
 
-  // Load core data
   loadDashboard();
   refreshRoutineDropdowns();
   loadPendingMakeup();
-
-  // Bind forms
   bindForms();
 
-  // Bind pending search
-  const searchBox = qid("pendingTeacherSearch");
-  if (searchBox) {
-    searchBox.addEventListener("keyup", filterPendingTable);
-  }
+  enableSelect2SmartSearch();   // ✅ ADD HERE (ONLY THIS LINE)
 });
 
 /* =========================================================
@@ -86,25 +78,34 @@ async function refreshRoutineDropdowns() {
     // Populate Missed form
     populateSelect("m_time", uniq(d.times));
     populateSelect("m_room", uniq(d.rooms));
-    populateSelect("m_course", uniq(d.courses));
+    const sortedCourses = uniq(d.courses).sort((a, b) => a.localeCompare(b));
+    populateSelect("m_course", sortedCourses);
     populateSelect("m_teacher", uniq(d.teachers));
 
     // Populate Makeup form
     populateSelect("k_time", uniq(d.times));
     populateSelect("k_room", uniq(d.rooms));
-    populateSelect("k_course", uniq(d.courses));
+    populateSelect("k_course", sortedCourses);
     populateSelect("k_teacher", uniq(d.teachers));
 
     // Apply Select2 AFTER options are loaded
     setTimeout(() => {
-      if (window.jQuery) {
-        $("#m_teacher, #m_course, #k_teacher, #k_course").select2({
-          width: "100%",
-          placeholder: "Search & select...",
-          allowClear: true
-        });
-      }
-    }, 300);
+  if (window.jQuery) {
+
+    // Teacher stays normal
+    $("#m_teacher, #k_teacher").select2({
+      width: "100%",
+      placeholder: "Search & select...",
+      allowClear: true
+    });
+
+    // DESTROY old Select2 on course (prevents broken search)
+    $("#m_course, #k_course").select2("destroy");
+
+    // Now initialize our smart course search
+    enableSelect2SmartSearch();
+  }
+}, 300);
 
   } catch (e) {
     console.error("Routine load failed", e);
@@ -249,6 +250,15 @@ function updateMakeup(row) {
     .then(res => {
       if (res.status === "success") {
         alert("Updated successfully");
+
+        // ✅ KEY LOGIC YOU ASKED FOR:
+        if (status === "Completed") {
+          // Remove row instantly from UI
+          const tr = document.getElementById(`status_${row}`)?.closest("tr");
+          if (tr) tr.remove();
+        }
+
+        // Still refresh to keep dashboard correct
         loadPendingMakeup();
         loadDashboard();
       } else {
@@ -257,7 +267,6 @@ function updateMakeup(row) {
     })
     .catch(console.error);
 }
-
 /* ---------- SEARCH PENDING LIST ---------- */
 function filterPendingTable() {
   const term = qid("pendingTeacherSearch").value.toLowerCase().trim();
@@ -334,4 +343,89 @@ function autoFillMakeup(day, time, room) {
   qid("k_time").value = time;
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
+}
+/* =========================================================
+   SMART SEARCH — TEACHER INITIAL (LIVE SEARCH)
+========================================================= */
+
+function enableTeacherSearch() {
+  ["m_teacher", "k_teacher"].forEach(id => {
+    const select = qid(id);
+    if (!select) return;
+
+    select.addEventListener("input", function () {
+      const term = this.value.toLowerCase().trim();
+
+      Array.from(select.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.style.display = opt.value.toLowerCase().includes(term) ? "" : "none";
+      });
+    });
+  });
+}
+
+/* =========================================================
+   SMART SEARCH — COURSE / SECTION (LIVE SEARCH)
+========================================================= */
+
+function enableCourseSearch() {
+  ["m_course", "k_course"].forEach(id => {
+    const select = qid(id);
+    if (!select) return;
+
+    select.addEventListener("input", function () {
+      const term = this.value.toLowerCase().trim();
+
+      Array.from(select.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.style.display = opt.value.toLowerCase().includes(term) ? "" : "none";
+      });
+    });
+  });
+}
+
+/* =========================================================
+   ✅ FIXED COURSE/SECTION SEARCH — WORKS WITH DIGITS + LETTERS
+   (MISSED & MAKEUP ONLY)
+========================================================= */
+
+function enableSelect2SmartSearch() {
+
+  function highlightText(text, term) {
+    const regex = new RegExp(`(${term})`, "gi");
+    return text.replace(regex,
+      "<span style='background:yellow; font-weight:bold;'>$1</span>");
+  }
+
+  const courseMatcher = function (params, data) {
+    if ($.trim(params.term) === "") return data;
+    if (!data.text) return null;
+
+    const term = params.term.trim().toLowerCase();
+
+    // 👉 VERY IMPORTANT FIX: check BOTH visible text AND underlying value
+    const text = (data.text || "").toLowerCase();
+    const value = (data.id || "").toLowerCase();
+
+    // Match if term appears in EITHER text or value (fixes digit issue)
+    if (!text.includes(term) && !value.includes(term)) {
+      return null;
+    }
+
+    const modified = $.extend({}, data, true);
+    modified.text = highlightText(data.text, term);
+    return modified;
+  };
+
+  // 🔹 APPLY ONLY TO COURSE (MISSED & MAKEUP)
+  $("#m_course, #k_course").select2({
+    width: "100%",
+    placeholder: "Type course or section...",
+    allowClear: true,
+    matcher: courseMatcher,
+    escapeMarkup: function (m) { return m; },
+    minimumResultsForSearch: 0,
+    selectOnClose: false,   // you still click to select
+    closeOnSelect: true
+  });
 }
