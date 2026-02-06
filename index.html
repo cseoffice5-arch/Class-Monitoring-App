@@ -19,15 +19,6 @@
 
 <body>
 
-<!-- ================= LOGIN ================= -->
-<div id="loginScreen" style="display:none;">
-  <div style="text-align:center;background:#fff;padding:30px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.15);max-width:320px;width:100%;">
-    <h2>Class Monitoring System</h2>
-    <p style="font-size:14px;color:#555;">Sign in with DIU Email</p>
-    <div id="gSignInBtn"></div>
-  </div>
-</div>
-
 <!-- ================= APP ROOT ================= -->
 <div id="appRoot" style="display:none;">
 
@@ -225,11 +216,10 @@
 </div><!-- appRoot -->
 
 <!-- ================= MAIN SCRIPT ================= -->
+<script src="script.js" defer></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("appRoot").style.display = "block";
 
   const missedForm = document.getElementById("missedForm");
   const makeupForm = document.getElementById("makeupForm");
