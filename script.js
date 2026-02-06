@@ -14,7 +14,7 @@ function populateSelect(id, list) {
 
   sel.innerHTML = `<option value="">Select</option>`;
 
-  list.forEach(v => {
+  (list || []).forEach(v => {
     if (v && v.toString().trim() !== "") {
       sel.add(new Option(v, v));
     }
@@ -26,31 +26,33 @@ function formatDateISO(d) {
   return new Date(d).toISOString().split("T")[0];
 }
 
-/* ---------- BOOT ---------- */
+/* =========================================================
+   BOOT (AUTO-OPEN APP — NO LOGIN)
+========================================================= */
 window.addEventListener("DOMContentLoaded", () => {
-  const email = localStorage.getItem("cms_user_email");
 
-  if (email) {
-    qid("loginScreen").style.display = "none";
-    qid("appRoot").style.display = "block";
+  // Make sure app is visible (your HTML hides it initially)
+  if (qid("appRoot")) qid("appRoot").style.display = "block";
+  if (qid("loginScreen")) qid("loginScreen").style.display = "none";
 
-    loadDashboard();
-    refreshRoutineDropdowns();
-    loadPendingMakeup();
-    
-    const emptyTab = document.querySelector('[data-tab="empty"]');
-if (emptyTab) {
-  emptyTab.addEventListener("click", loadEmptyRooms);
-}
+  // Load core data
+  loadDashboard();
+  refreshRoutineDropdowns();
+  loadPendingMakeup();
 
-    bindForms();
-  } else {
-    qid("loginScreen").style.display = "flex";
-    qid("appRoot").style.display = "none";
+  // Bind forms
+  bindForms();
+
+  // Bind pending search
+  const searchBox = qid("pendingTeacherSearch");
+  if (searchBox) {
+    searchBox.addEventListener("keyup", filterPendingTable);
   }
 });
 
-/* ---------- DASHBOARD ---------- */
+/* =========================================================
+   DASHBOARD
+========================================================= */
 function loadDashboard() {
   fetch(`${API_URL}?action=get_dashboard`)
     .then(r => r.json())
@@ -65,57 +67,61 @@ function loadDashboard() {
     .catch(console.error);
 }
 
-/* ---------- ROUTINE MASTER DROPDOWNS ---------- */
+/* =========================================================
+   ROUTINE MASTER DROPDOWNS (FIXED FOR GITHUB)
+========================================================= */
 async function refreshRoutineDropdowns() {
   try {
     const res = await fetch(`${API_URL}?action=get_routine_master`);
     const d = await res.json();
+
     if (d.status !== "success") {
       console.error("Routine load failed", d);
       return;
     }
 
-    const uniq = a => [...new Set((a || []).filter(v => v && v.toString().trim() !== ""))];
+    const uniq = a =>
+      [...new Set((a || []).filter(v => v && v.toString().trim() !== ""))];
 
+    // Populate Missed form
     populateSelect("m_time", uniq(d.times));
     populateSelect("m_room", uniq(d.rooms));
     populateSelect("m_course", uniq(d.courses));
     populateSelect("m_teacher", uniq(d.teachers));
 
+    // Populate Makeup form
     populateSelect("k_time", uniq(d.times));
     populateSelect("k_room", uniq(d.rooms));
     populateSelect("k_course", uniq(d.courses));
     populateSelect("k_teacher", uniq(d.teachers));
-        
-    setTimeout(() => {
-      $("#m_teacher, #m_course, #k_teacher, #k_course").select2({
-        width: "100%",
-        placeholder: "Search & select...",
-        allowClear: true
-      });
-    }, 300);
 
+    // Apply Select2 AFTER options are loaded
+    setTimeout(() => {
+      if (window.jQuery) {
+        $("#m_teacher, #m_course, #k_teacher, #k_course").select2({
+          width: "100%",
+          placeholder: "Search & select...",
+          allowClear: true
+        });
+      }
+    }, 300);
 
   } catch (e) {
     console.error("Routine load failed", e);
   }
 }
 
-$(document).ready(function() {
-  $('#m_teacher, #m_course, #k_teacher, #k_course').select2({
-    width: '100%',
-    placeholder: 'Select an option',
-    allowClear: true
-  });
-});
-
-/* ---------- FORM BINDINGS ---------- */
+/* =========================================================
+   FORM BINDINGS
+========================================================= */
 function bindForms() {
   qid("missedForm")?.addEventListener("submit", submitMissed);
   qid("makeupForm")?.addEventListener("submit", submitMakeup);
 }
 
-/* ---------- SAVE MISSED ---------- */
+/* =========================================================
+   SAVE MISSED
+========================================================= */
 async function submitMissed(e) {
   e.preventDefault();
 
@@ -130,7 +136,8 @@ async function submitMissed(e) {
     reason: qid("m_reason").value
   });
 
-  const res = await fetch(API_URL, { method: "POST", body: payload }).then(r => r.json());
+  const res = await fetch(API_URL, { method: "POST", body: payload })
+    .then(r => r.json());
 
   if (res.status === "success") {
     alert("Missed class entry saved successfully.");
@@ -141,7 +148,9 @@ async function submitMissed(e) {
   }
 }
 
-/* ---------- SAVE MAKEUP ---------- */
+/* =========================================================
+   SAVE MAKEUP
+========================================================= */
 async function submitMakeup(e) {
   e.preventDefault();
 
@@ -158,14 +167,14 @@ async function submitMakeup(e) {
     remarks: qid("k_remarks").value.trim()
   });
 
-  const res = await fetch(API_URL, { method: "POST", body: payload }).then(r => r.json());
+  const res = await fetch(API_URL, { method: "POST", body: payload })
+    .then(r => r.json());
 
-    if (res.status === "success") {
+  if (res.status === "success") {
     alert("Makeup class entry saved successfully.");
     e.target.reset();
     loadPendingMakeup();
     loadDashboard();
-    loadEmptyRooms();
   } else {
     alert(res.message || "Failed to save makeup class entry.");
   }
@@ -174,36 +183,11 @@ async function submitMakeup(e) {
 /* =========================================================
    PENDING MAKEUP
 ========================================================= */
-function updateMakeup(row) {
-  const statusEl = document.getElementById(`status_${row}`);
-  const remarksEl = document.getElementById(`remarks_${row}`);
-
-  if (!statusEl) return;
-
-  const status = statusEl.value;
-  const remarks = remarksEl ? remarksEl.value.trim() : "";
-
-  fetch(
-    `${API_URL}?action=update_makeup&row=${row}&status=${status}&remarks=${encodeURIComponent(remarks)}`
-  )
-    .then(r => r.json())
-    .then(res => {
-      if (res.status === "success") {
-        alert("✅ Updated");
-        loadPendingMakeup();
-        loadDashboard();
-      } else {
-        alert(res.message || "❌ Update failed");
-      }
-    })
-    .catch(console.error);
-}
-
 function loadPendingMakeup() {
   fetch(`${API_URL}?action=get_pending_makeup`)
     .then(r => r.json())
     .then(res => {
-      const tbody = document.querySelector("#pendingTable tbody");
+      const tbody = qs("#pendingTable tbody");
       if (!tbody) return;
 
       tbody.innerHTML = "";
@@ -249,18 +233,45 @@ function loadPendingMakeup() {
     .catch(console.error);
 }
 
-// --------- FIX: SEARCH IN PENDING LIST ---------
-document.getElementById("pendingTeacherSearch").addEventListener("keyup", function () {
-  const term = this.value.toLowerCase().trim();
+function updateMakeup(row) {
+  const statusEl = document.getElementById(`status_${row}`);
+  const remarksEl = document.getElementById(`remarks_${row}`);
+
+  if (!statusEl) return;
+
+  const status = statusEl.value;
+  const remarks = remarksEl ? remarksEl.value.trim() : "";
+
+  fetch(
+    `${API_URL}?action=update_makeup&row=${row}&status=${status}&remarks=${encodeURIComponent(remarks)}`
+  )
+    .then(r => r.json())
+    .then(res => {
+      if (res.status === "success") {
+        alert("Updated successfully");
+        loadPendingMakeup();
+        loadDashboard();
+      } else {
+        alert(res.message || "Update failed");
+      }
+    })
+    .catch(console.error);
+}
+
+/* ---------- SEARCH PENDING LIST ---------- */
+function filterPendingTable() {
+  const term = qid("pendingTeacherSearch").value.toLowerCase().trim();
   const rows = document.querySelectorAll("#pendingTable tbody tr");
 
   rows.forEach(row => {
     const text = row.innerText.toLowerCase();
     row.style.display = text.includes(term) ? "" : "none";
   });
-});
+}
 
-/* ---------- EMPTY ROOM CHECK (DAY + TIME + ROOM) ---------- */
+/* =========================================================
+   EMPTY ROOM CHECK
+========================================================= */
 function loadEmptyRooms() {
   fetch(`${API_URL}?action=get_empty_rooms`)
     .then(r => r.json())
@@ -287,7 +298,7 @@ function loadEmptyRooms() {
             <td>${r.room || ""}</td>
             <td>
               <button class="book-btn"
-                onclick="autoFillMakeup('', '${r.time || ""}', '${r.room || ""}')">
+                onclick="autoFillMakeup('${r.day || ""}', '${r.time || ""}', '${r.room || ""}')">
                 Book
               </button>
             </td>
@@ -307,28 +318,6 @@ function loadEmptyRooms() {
     });
 }
 
-/* ---------- SEARCH FILTER FOR EMPTY ROOMS ---------- */
-function filterEmptyRooms() {
-  const input = qid("emptyRoomSearch").value.toLowerCase();
-  const rows = document.querySelectorAll(".empty-room-row");
-
-  rows.forEach(row => {
-    const text = row.innerText.toLowerCase();
-    row.style.display = text.includes(input) ? "" : "none";
-  });
-}
-
-/* Auto-fill Makeup Form */
-function autoFillMakeup(day, time, room) {
-  qid("k_time").value = time;
-  qid("k_room").value = room;
-
-  const makeupTab = document.querySelector('[data-tab="makeup"]');
-  if (makeupTab) makeupTab.click();
-
-  alert(`Selected: ${day} | ${time} | ${room}`);
-}
-
 /* ---------- SEARCH EMPTY ROOM LIST ---------- */
 function searchEmptyRooms() {
   const term = qid("emptyRoomSearch").value.toLowerCase().trim();
@@ -336,10 +325,13 @@ function searchEmptyRooms() {
 
   rows.forEach(row => {
     const text = row.innerText.toLowerCase();
-    if (text.includes(term)) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
+    row.style.display = text.includes(term) ? "" : "none";
   });
+}
+
+/* ---------- AUTO-FILL MAKEUP FORM ---------- */
+function autoFillMakeup(day, time, room) {
+  qid("k_time").value = time;
+  qid("k_room").value = room;
+  alert(`Selected: ${day} | ${time} | ${room}`);
 }
