@@ -28,15 +28,26 @@ function formatDateISO(d) {
 
 /* ---------- BOOT ---------- */
 window.addEventListener("DOMContentLoaded", () => {
+  const email = localStorage.getItem("cms_user_email");
 
-  // 🔹 REMOVE LOGIN — open app directly
-  qid("loginScreen").style.display = "none";
-  qid("appRoot").style.display = "block";
+  if (email) {
+    qid("loginScreen").style.display = "none";
+    qid("appRoot").style.display = "block";
 
-  loadDashboard();
-  refreshRoutineDropdowns();
-  loadPendingMakeup();
+    loadDashboard();
+    refreshRoutineDropdowns();
+    loadPendingMakeup();
+    
+    const emptyTab = document.querySelector('[data-tab="empty"]');
+if (emptyTab) {
+  emptyTab.addEventListener("click", loadEmptyRooms);
+}
 
+    bindForms();
+  } else {
+    qid("loginScreen").style.display = "flex";
+    qid("appRoot").style.display = "none";
+  }
 });
 
 /* ---------- DASHBOARD ---------- */
