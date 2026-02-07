@@ -2,7 +2,7 @@
    CONFIG (GITHUB SAFE — NO LOGIN)
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxO3ibpCmWcnF-nfibz2PMNNCbyxFvOYNMG3bBbe9XWT0O00ZfJO-SWzXhlRB3EjWxp/exec";
+  "https://script.google.com/macros/s/AKfycby4tozZ8BwvBSbrAf5INwRMXjG5YnzoxVsnxkpxho2sCCXM-rJW8_5A21NQHWrpqKwW/exec";
 
 /* ---------- HELPERS ---------- */
 function qs(sel) { return document.querySelector(sel); }
@@ -429,5 +429,6 @@ function enableSelect2SmartSearch() {
     closeOnSelect: true
   });
 }
+
 
 
