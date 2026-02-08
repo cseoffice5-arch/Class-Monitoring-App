@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxQ7rhnwFAlQY_XHmeJaSPczYMO0X3M2nEnP4j-HjvfNEUMvQ97ZzXZQOVjNi4Q6DFcow/exec";
+  "https://script.google.com/macros/s/AKfycbw67CEG2UpBQzZ6QbtTxNxIfKbfNQVfcx0QND7WJbkp37IvgNms-AX4ltk60hEAN16EoQ/exec";
 
 /* ---------- HELPERS ---------- */
 function qs(sel) { return document.querySelector(sel); }
@@ -326,4 +326,5 @@ function autoFillMakeup(day, time, room) {
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
 }
+
 
