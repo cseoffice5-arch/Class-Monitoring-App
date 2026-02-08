@@ -5,16 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Class Monitoring System</title>
 
-
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0A7E4A">
 
   <!-- STYLE -->
   <link rel="stylesheet" href="style.css">
-   
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 </head>
 
 <body>
@@ -59,8 +55,8 @@
   <div class="logo-wrap">
     <img src="icon-512.svg" class="app-logo" alt="Logo">
   </div>
-  <h1>Class Monitoring System</h1>
-  <p class="subtitle">Missed & Makeup Class Schedule and Classroom Booking—CSE</p>
+  <h1>Class Monitoring App</h1>
+  <p class="subtitle">Missed & Makeup Class Entry — CSE-DIU</p>
 </header>
 
 <!-- ================= CONTROLS ================= -->
@@ -110,7 +106,7 @@
     </select>
   </label>
 
-  <button type="submit" class="submit">Submit Missed</button>
+  <button class="submit">Submit Missed</button>
 </form>
 
 <!-- ================= MAKEUP ================= -->
@@ -153,35 +149,33 @@
 </form>
 
 <!-- ================= PENDING ================= -->
-  <section id="pendingSection" class="form hidden">
-    <h2>Pending Makeup Classes</h2>
+<section id="pendingSection" class="form hidden">
+  <h2>Pending Makeup Classes</h2>
 
-    <input
-      id="pendingTeacherSearch"
-      class="filter"
-      placeholder="Search by Teacher Initial…">
+  <input
+    id="pendingTeacherSearch"
+    class="filter"
+    placeholder="Search by Teacher Initial…">
 
-    <div class="table-wrap">
-      <table id="pendingTable">
-        <thead>
-          <tr>
-            <th>Schedule</th>
-            <th>Dept</th>
-            <th>Course</th>
-            <th>Teacher</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Room</th>
-            <th>Status</th>
-            <th>Remarks</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
-</main>
+  <div class="table-wrap">
+    <table id="pendingTable">
+      <thead>
+        <tr>
+          <th>Schedule</th>
+          <th>Dept</th>
+          <th>Course</th>
+          <th>Teacher</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Room</th>
+          <th>Status</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
 
 <!-- ================= EMPTY ROOM CHECK ================= -->
 <section id="emptyRoomSection" class="form hidden">
@@ -219,7 +213,7 @@
 
 <!-- ================= FOOTER ================= -->
 <footer>
-  <small>Developed by Class Monitoring Committee-CSE— DIU</small>
+  <small>Developed by CSE Department — DIU</small>
 </footer>
 
 </div><!-- appRoot -->
