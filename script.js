@@ -1,8 +1,8 @@
 /* ========================================================= 
-   CONFIG (GITHUB SAFE — NO LOGIN)
+   CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycby4tozZ8BwvBSbrAf5INwRMXjG5YnzoxVsnxkpxho2sCCXM-rJW8_5A21NQHWrpqKwW/exec";
+  "https://script.google.com/macros/s/AKfycbyzhpWSlYfnm0SQPX-PTZEIwH_D1hKQfnGHl8klf2M7Nrte4jdCHQoPUEvhIKxrNr4p/exec";
 
 /* ---------- HELPERS ---------- */
 function qs(sel) { return document.querySelector(sel); }
@@ -27,7 +27,7 @@ function formatDateISO(d) {
 }
 
 /* =========================================================
-   BOOT (AUTO-OPEN APP — LOGIN REMOVED)
+   BOOT
 ========================================================= */
 window.addEventListener("DOMContentLoaded", () => {
 
@@ -38,8 +38,6 @@ window.addEventListener("DOMContentLoaded", () => {
   refreshRoutineDropdowns();
   loadPendingMakeup();
   bindForms();
-
-  enableSelect2SmartSearch();   // ✅ ADD HERE (ONLY THIS LINE)
 });
 
 /* =========================================================
@@ -60,7 +58,7 @@ function loadDashboard() {
 }
 
 /* =========================================================
-   ROUTINE MASTER DROPDOWNS (GITHUB FIXED)
+   ROUTINE MASTER DROPDOWNS
 ========================================================= */
 async function refreshRoutineDropdowns() {
   try {
@@ -75,37 +73,19 @@ async function refreshRoutineDropdowns() {
     const uniq = a =>
       [...new Set((a || []).filter(v => v && v.toString().trim() !== ""))];
 
-    // Populate Missed form
+    const sortedCourses = uniq(d.courses).sort((a, b) => a.localeCompare(b));
+
+    // Missed form
     populateSelect("m_time", uniq(d.times));
     populateSelect("m_room", uniq(d.rooms));
-    const sortedCourses = uniq(d.courses).sort((a, b) => a.localeCompare(b));
     populateSelect("m_course", sortedCourses);
     populateSelect("m_teacher", uniq(d.teachers));
 
-    // Populate Makeup form
+    // Makeup form
     populateSelect("k_time", uniq(d.times));
     populateSelect("k_room", uniq(d.rooms));
     populateSelect("k_course", sortedCourses);
     populateSelect("k_teacher", uniq(d.teachers));
-
-    // Apply Select2 AFTER options are loaded
-    setTimeout(() => {
-  if (window.jQuery) {
-
-    // Teacher stays normal
-    $("#m_teacher, #k_teacher").select2({
-      width: "100%",
-      placeholder: "Search & select...",
-      allowClear: true
-    });
-
-    // DESTROY old Select2 on course (prevents broken search)
-    $("#m_course, #k_course").select2("destroy");
-
-    // Now initialize our smart course search
-    enableSelect2SmartSearch();
-  }
-}, 300);
 
   } catch (e) {
     console.error("Routine load failed", e);
@@ -182,7 +162,7 @@ async function submitMakeup(e) {
 }
 
 /* =========================================================
-   PENDING MAKEUP
+   PENDING MAKEUP LIST (CLEAN + WORKING)
 ========================================================= */
 function loadPendingMakeup() {
   fetch(`${API_URL}?action=get_pending_makeup`)
@@ -203,7 +183,7 @@ function loadPendingMakeup() {
         tbody.insertAdjacentHTML(
           "beforeend",
           `
-<tr>
+<tr id="row_${r.row}">
   <td>${r.scheduleDate}</td>
   <td>${r.department}</td>
   <td>${r.course}</td>
@@ -213,8 +193,7 @@ function loadPendingMakeup() {
   <td>${r.makeupRoom}</td>
   <td>
     <select id="status_${r.row}">
-      <option value="" disabled selected hidden>${r.status}</option>
-      <option value="Pending">Pending</option>
+      <option value="Pending" selected>Pending</option>
       <option value="Completed">Completed</option>
     </select>
   </td>
@@ -222,7 +201,7 @@ function loadPendingMakeup() {
     <input
       id="remarks_${r.row}"
       value="${r.remarks || ""}"
-      placeholder="Attendance link provide"
+      placeholder="Attendance / recording link"
     >
     <button onclick="updateMakeup(${r.row})">Update</button>
   </td>
@@ -231,9 +210,14 @@ function loadPendingMakeup() {
         );
       });
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error("Pending load error:", err);
+    });
 }
 
+/* =========================================================
+   UPDATE MAKEUP (FINAL WORKING VERSION)
+========================================================= */
 function updateMakeup(row) {
   const statusEl = document.getElementById(`status_${row}`);
   const remarksEl = document.getElementById(`remarks_${row}`);
@@ -249,25 +233,32 @@ function updateMakeup(row) {
     .then(r => r.json())
     .then(res => {
       if (res.status === "success") {
-        alert("Updated successfully");
 
-        // ✅ KEY LOGIC YOU ASKED FOR:
+        alert(res.message || "Updated successfully");
+
+        // Remove instantly if Completed
         if (status === "Completed") {
-          // Remove row instantly from UI
-          const tr = document.getElementById(`status_${row}`)?.closest("tr");
+          const tr = document.getElementById(`row_${row}`);
           if (tr) tr.remove();
         }
 
-        // Still refresh to keep dashboard correct
+        // Refresh lists
         loadPendingMakeup();
         loadDashboard();
+
       } else {
         alert(res.message || "Update failed");
       }
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error("Update error:", err);
+      alert("Server error — please check console.");
+    });
 }
-/* ---------- SEARCH PENDING LIST ---------- */
+
+/* =========================================================
+   SEARCH PENDING LIST
+========================================================= */
 function filterPendingTable() {
   const term = qid("pendingTeacherSearch").value.toLowerCase().trim();
   const rows = document.querySelectorAll("#pendingTable tbody tr");
@@ -317,17 +308,9 @@ function loadEmptyRooms() {
     })
     .catch(err => {
       console.error("Empty room load error:", err);
-      const tbody = qs("#emptyRoomTable tbody");
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="4" style="color:red; text-align:center;">
-            Failed to load empty rooms
-          </td>
-        </tr>`;
     });
 }
 
-/* ---------- SEARCH EMPTY ROOM LIST ---------- */
 function searchEmptyRooms() {
   const term = qid("emptyRoomSearch").value.toLowerCase().trim();
   const rows = qs("#emptyRoomTable tbody").querySelectorAll("tr");
@@ -338,97 +321,8 @@ function searchEmptyRooms() {
   });
 }
 
-/* ---------- AUTO-FILL MAKEUP FORM ---------- */
 function autoFillMakeup(day, time, room) {
   qid("k_time").value = time;
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
 }
-/* =========================================================
-   SMART SEARCH — TEACHER INITIAL (LIVE SEARCH)
-========================================================= */
-
-function enableTeacherSearch() {
-  ["m_teacher", "k_teacher"].forEach(id => {
-    const select = qid(id);
-    if (!select) return;
-
-    select.addEventListener("input", function () {
-      const term = this.value.toLowerCase().trim();
-
-      Array.from(select.options).forEach(opt => {
-        if (!opt.value) return;
-        opt.style.display = opt.value.toLowerCase().includes(term) ? "" : "none";
-      });
-    });
-  });
-}
-
-/* =========================================================
-   SMART SEARCH — COURSE / SECTION (LIVE SEARCH)
-========================================================= */
-
-function enableCourseSearch() {
-  ["m_course", "k_course"].forEach(id => {
-    const select = qid(id);
-    if (!select) return;
-
-    select.addEventListener("input", function () {
-      const term = this.value.toLowerCase().trim();
-
-      Array.from(select.options).forEach(opt => {
-        if (!opt.value) return;
-        opt.style.display = opt.value.toLowerCase().includes(term) ? "" : "none";
-      });
-    });
-  });
-}
-
-/* =========================================================
-   ✅ FIXED COURSE/SECTION SEARCH — WORKS WITH DIGITS + LETTERS
-   (MISSED & MAKEUP ONLY)
-========================================================= */
-
-function enableSelect2SmartSearch() {
-
-  function highlightText(text, term) {
-    const regex = new RegExp(`(${term})`, "gi");
-    return text.replace(regex,
-      "<span style='background:yellow; font-weight:bold;'>$1</span>");
-  }
-
-  const courseMatcher = function (params, data) {
-    if ($.trim(params.term) === "") return data;
-    if (!data.text) return null;
-
-    const term = params.term.trim().toLowerCase();
-
-    // 👉 VERY IMPORTANT FIX: check BOTH visible text AND underlying value
-    const text = (data.text || "").toLowerCase();
-    const value = (data.id || "").toLowerCase();
-
-    // Match if term appears in EITHER text or value (fixes digit issue)
-    if (!text.includes(term) && !value.includes(term)) {
-      return null;
-    }
-
-    const modified = $.extend({}, data, true);
-    modified.text = highlightText(data.text, term);
-    return modified;
-  };
-
-  // 🔹 APPLY ONLY TO COURSE (MISSED & MAKEUP)
-  $("#m_course, #k_course").select2({
-    width: "100%",
-    placeholder: "Type course or section...",
-    allowClear: true,
-    matcher: courseMatcher,
-    escapeMarkup: function (m) { return m; },
-    minimumResultsForSearch: 0,
-    selectOnClose: false,   // you still click to select
-    closeOnSelect: true
-  });
-}
-
-
-
