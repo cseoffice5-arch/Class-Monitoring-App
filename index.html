@@ -245,6 +245,11 @@ document.addEventListener("DOMContentLoaded", () => {
     el.classList.remove("hidden");
   }
 
+  // >>>>>>> ADD THESE TWO LINES <<<<<<<<
+  document.getElementById("pendingTeacherSearch")
+    .addEventListener("input", filterPendingTable);
+  // >>>>>>> END ADDITION <<<<<<<<
+
 });
 </script>
 
@@ -257,6 +262,3 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
-
-
-
