@@ -38,6 +38,13 @@ window.addEventListener("DOMContentLoaded", () => {
   refreshRoutineDropdowns();
   loadPendingMakeup();
   bindForms();
+
+  // ✅ Enable teacher search
+  enableTeacherSelect2();
+
+  qid("pendingSearchBtn")?.addEventListener("click", filterPendingTable);
+  qid("pendingTeacherSearch")?.addEventListener("input", filterPendingTable);
+ 
 });
 
 /* =========================================================
