@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwhcbTuDTWfkyS4fZT1l9Jvr18UKNJ3TqqVDYsj43oOwu102CWItpVVr56HX6oq19JKiA/exec";
+  "https://script.google.com/macros/s/AKfycbyRTZ06vdJpI5vUBc1Mk_doAVzHUT82M5K-3W9r7ikRpnhA4IMZY31fUitNdYtm-IiQMg/exec";
 
 // ========== USER LOGIN (ONE TIME) ==========
 let userEmail = localStorage.getItem("loggedEmail");
@@ -191,7 +191,7 @@ function bindForms() {
 /* =========================================================
    SAVE MISSED
 ========================================================= */
-async function submitMissed(e) {
+  async function submitMissed(e) {
   e.preventDefault();
 
   const payload = new URLSearchParams({
