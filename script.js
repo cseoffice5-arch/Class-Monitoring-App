@@ -1,26 +1,19 @@
-/* ========================================================= 
+/* =========================================================
    CONFIG
 ========================================================= */
 const API_URL =
   "https://script.google.com/macros/s/AKfycbzty5NfrlJLstzkZ_MEntPzU4OAN_OLKM7sKNKVqLKgqWyrKCd_bDzlCl5hDZ9igtBOeQ/exec";
 
 // ========== USER LOGIN (ONE TIME) ==========
-async function ensureUserEmail() {
-  let email = localStorage.getItem("loggedEmail");
+let userEmail = localStorage.getItem("loggedEmail");
 
-  if (!email) {
-    email = prompt("Enter your official DIU email:");
-    if (!email) {
-      alert("Email is required.");
-      return;
-    }
-
-    email = email.toLowerCase().trim();
-    localStorage.setItem("loggedEmail", email);
+if (!userEmail) {
+  userEmail = prompt("Enter your official email to use the system:");
+  if (userEmail) {
+    localStorage.setItem("loggedEmail", userEmail.trim().toLowerCase());
   }
-
-  window.LOGGED_EMAIL = email.toLowerCase().trim();
 }
+
 
 /* =========================================================
    HELPERS
@@ -68,9 +61,7 @@ async function ensureUserEmail() {
    CHECK MISSED ENTRY PERMISSION
 ========================================================= */
 async function checkMissedPermission() {
-  const email = window.LOGGED_EMAIL || "";
-
-  if (!email) return;
+  const email = localStorage.getItem("loggedEmail") || "";
 
   try {
     const res = await fetch(
@@ -79,20 +70,16 @@ async function checkMissedPermission() {
 
     const data = await res.json();
 
-    const btn = document.getElementById("missedSubmitBtn");
-
     if (!data.authorized) {
+      const btn = document.getElementById("missedSubmitBtn");
       if (btn) {
         btn.disabled = true;
         btn.style.opacity = "0.6";
+        btn.style.cursor = "not-allowed";
       }
-    } else {
-      if (btn) {
-        btn.disabled = false;
-        btn.style.opacity = "1";
-      }
-    }
 
+      alert("You are NOT authorized for Missed Class Entry. You can still do Makeup.");
+    }
   } catch (err) {
     console.error("Permission check failed", err);
   }
@@ -426,4 +413,3 @@ function autoFillMakeup(day, time, room) {
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
 }
-
