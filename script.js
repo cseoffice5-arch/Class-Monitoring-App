@@ -3,7 +3,6 @@
 ========================================================= */
 const API_URL =
   "https://script.google.com/macros/s/AKfycbz3DYFhnm-wf_D0ZNDia1NYaJQ7vY8M60OlUC8o5ptES6UvvcvDqAyQko6QUIZk2lp2mg/exec";
-
 // ========== USER LOGIN (ONE TIME) ==========
 let userEmail = localStorage.getItem("loggedEmail");
 
@@ -13,7 +12,6 @@ if (!userEmail) {
     localStorage.setItem("loggedEmail", userEmail.trim().toLowerCase());
   }
 }
-
 
 /* =========================================================
    HELPERS
@@ -413,6 +411,3 @@ function autoFillMakeup(day, time, room) {
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
 }
-
-
-
