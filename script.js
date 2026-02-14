@@ -2,7 +2,8 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbz3DYFhnm-wf_D0ZNDia1NYaJQ7vY8M60OlUC8o5ptES6UvvcvDqAyQko6QUIZk2lp2mg/exec";
+  "https://script.google.com/macros/s/AKfycbwhcbTuDTWfkyS4fZT1l9Jvr18UKNJ3TqqVDYsj43oOwu102CWItpVVr56HX6oq19JKiA/exec";
+
 // ========== USER LOGIN (ONE TIME) ==========
 let userEmail = localStorage.getItem("loggedEmail");
 
@@ -12,6 +13,7 @@ if (!userEmail) {
     localStorage.setItem("loggedEmail", userEmail.trim().toLowerCase());
   }
 }
+
 
 /* =========================================================
    HELPERS
