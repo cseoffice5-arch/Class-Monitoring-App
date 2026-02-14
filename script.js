@@ -4,7 +4,27 @@
 const API_URL =
   "https://script.google.com/macros/s/AKfycbw67CEG2UpBQzZ6QbtTxNxIfKbfNQVfcx0QND7WJbkp37IvgNms-AX4ltk60hEAN16EoQ/exec";
 
-/* ---------- HELPERS ---------- */
+// ========== USER LOGIN (ONE TIME) ==========
+async function ensureUserEmail() {
+  let email = localStorage.getItem("loggedEmail");
+
+  if (!email) {
+    email = prompt("Enter your official DIU email:");
+    if (!email) {
+      alert("Email is required.");
+      return;
+    }
+
+    email = email.toLowerCase().trim();
+    localStorage.setItem("loggedEmail", email);
+  }
+
+  window.LOGGED_EMAIL = email.toLowerCase().trim();
+}
+
+/* =========================================================
+   HELPERS
+========================================================= */
 function qs(sel) { return document.querySelector(sel); }
 function qid(id) { return document.getElementById(id); }
 
@@ -27,9 +47,64 @@ function formatDateISO(d) {
 }
 
 /* =========================================================
+   ONE-TIME EMAIL PROMPT (STORED LOCALLY)
+========================================================= */
+async function ensureUserEmail() {
+  let email = localStorage.getItem("loggedEmail");
+
+  if (!email) {
+    email = prompt("Enter your email to use the system:");
+    if (!email) {
+      alert("Email is required to use the system.");
+      throw new Error("No email provided");
+    }
+    localStorage.setItem("loggedEmail", email);
+  }
+
+  window.LOGGED_EMAIL = email.toLowerCase().trim();
+}
+
+/* =========================================================
+   CHECK MISSED ENTRY PERMISSION
+========================================================= */
+async function checkMissedPermission() {
+  const email = window.LOGGED_EMAIL || "";
+
+  if (!email) return;
+
+  try {
+    const res = await fetch(
+      `${API_URL}?action=check_missed_permission&email=${encodeURIComponent(email)}`
+    );
+
+    const data = await res.json();
+
+    const btn = document.getElementById("missedSubmitBtn");
+
+    if (!data.authorized) {
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = "0.6";
+      }
+    } else {
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+      }
+    }
+
+  } catch (err) {
+    console.error("Permission check failed", err);
+  }
+}
+
+/* =========================================================
    BOOT
 ========================================================= */
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
+
+  await ensureUserEmail();
+  await checkMissedPermission();
 
   if (qid("appRoot")) qid("appRoot").style.display = "block";
   if (qid("loginScreen")) qid("loginScreen").style.display = "none";
@@ -39,12 +114,7 @@ window.addEventListener("DOMContentLoaded", () => {
   loadPendingMakeup();
   bindForms();
 
-  // ✅ Enable teacher search
-  enableTeacherSelect2();
-
-  qid("pendingSearchBtn")?.addEventListener("click", filterPendingTable);
   qid("pendingTeacherSearch")?.addEventListener("input", filterPendingTable);
- 
 });
 
 /* =========================================================
@@ -62,6 +132,30 @@ function loadDashboard() {
       qid("extraCount").textContent = d.extra || 0;
     })
     .catch(console.error);
+}
+
+async function checkMissedPermission() {
+  const email = localStorage.getItem("loggedEmail") || "";
+
+  try {
+    const res = await fetch(
+      `${API_URL}?action=check_missed_permission&email=${encodeURIComponent(email)}`
+    );
+    const data = await res.json();
+
+    if (!data.authorized) {
+      // DISABLE MISSED ENTRY BUTTON
+      const btn = document.getElementById("missedSubmitBtn");
+      if (btn) {
+        btn.disabled = true;
+        btn.title = "You are not authorized for Missed Entry";
+      }
+
+      alert("You are NOT authorized for Missed Class Entry. You can still do Makeup.");
+    }
+  } catch (err) {
+    console.error("Permission check failed", err);
+  }
 }
 
 /* =========================================================
@@ -115,6 +209,7 @@ async function submitMissed(e) {
 
   const payload = new URLSearchParams({
     action: "save_missed",
+    email: window.LOGGED_EMAIL,
     date: formatDateISO(qid("m_date").value),
     department: qid("m_dept").value,
     course: qid("m_course").value,
@@ -132,7 +227,7 @@ async function submitMissed(e) {
     e.target.reset();
     loadDashboard();
   } else {
-    alert(res.message || "Failed to save missed class entry.");
+    alert(res.message || "Not Authorized for Missed Entry");
   }
 }
 
@@ -169,7 +264,7 @@ async function submitMakeup(e) {
 }
 
 /* =========================================================
-   PENDING MAKEUP LIST (CLEAN + WORKING)
+   PENDING MAKEUP LIST
 ========================================================= */
 function loadPendingMakeup() {
   fetch(`${API_URL}?action=get_pending_makeup`)
@@ -223,7 +318,7 @@ function loadPendingMakeup() {
 }
 
 /* =========================================================
-   UPDATE MAKEUP (FINAL WORKING VERSION)
+   UPDATE MAKEUP
 ========================================================= */
 function updateMakeup(row) {
   const statusEl = document.getElementById(`status_${row}`);
@@ -241,15 +336,13 @@ function updateMakeup(row) {
     .then(res => {
       if (res.status === "success") {
 
-        alert(res.message || "Updated successfully");
+        alert("Updated successfully");
 
-        // Remove instantly if Completed
         if (status === "Completed") {
           const tr = document.getElementById(`row_${row}`);
           if (tr) tr.remove();
         }
 
-        // Refresh lists
         loadPendingMakeup();
         loadDashboard();
 
