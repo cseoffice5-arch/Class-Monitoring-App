@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyJyB34RCVJjJ11Mc7pFG8HPWfomcTx73-c_7cTwhNDtwNWkq7UfV5o0iyGwfikV56haA/exec";
+  "https://script.google.com/macros/s/AKfycbzty5NfrlJLstzkZ_MEntPzU4OAN_OLKM7sKNKVqLKgqWyrKCd_bDzlCl5hDZ9igtBOeQ/exec";
 
 // ========== USER LOGIN (ONE TIME) ==========
 async function ensureUserEmail() {
@@ -426,3 +426,4 @@ function autoFillMakeup(day, time, room) {
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
 }
+
