@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyRTZ06vdJpI5vUBc1Mk_doAVzHUT82M5K-3W9r7ikRpnhA4IMZY31fUitNdYtm-IiQMg/exec";
+  "https://script.google.com/macros/s/AKfycbw89B_nj8YNdM6nuApx80d32kPR7pRR7LTXEkgWUvrkkaRHqVbc2IBm34MEaunuC_m7CQ/exec";
 
 // ========== USER LOGIN (ONE TIME) ==========
 let userEmail = localStorage.getItem("loggedEmail");
@@ -413,3 +413,4 @@ function autoFillMakeup(day, time, room) {
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
 }
+
