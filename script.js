@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzgm4bGJcA-HhxpzcCMi4t5NyYwk_Q4mQgCHxPWcRGVdV5Si6tlwgEp1-xwsU5Ym6RC2Q/exec";
+  "https://script.google.com/macros/s/AKfycbwO_gQPaFfNIGuq_pyocTOcg9TiIfvC2FgWQnw160t7WXdDKok1w_xs6lT90HqYbCOwoQ/exec";
 
 // ========== USER LOGIN (ONE TIME) ==========
 let userEmail = localStorage.getItem("loggedEmail");
@@ -161,19 +161,30 @@ async function refreshRoutineDropdowns() {
     const uniq = a =>
       [...new Set((a || []).filter(v => v && v.toString().trim() !== ""))];
 
-    const sortedCourses = uniq(d.courses).sort((a, b) => a.localeCompare(b));
+    const sortedCourses = uniq(d.courses).sort((a, b) =>
+      a.localeCompare(b)
+    );
 
+    // 🔥 SORT TEACHERS A → Z (case insensitive, first character wise)
+    const sortedTeachers = uniq(d.teachers).sort((a, b) =>
+      a.toUpperCase().localeCompare(b.toUpperCase())
+    );
+
+    // ======================
     // Missed form
+    // ======================
     populateSelect("m_time", uniq(d.times));
     populateSelect("m_room", uniq(d.rooms));
     populateSelect("m_course", sortedCourses);
-    populateSelect("m_teacher", uniq(d.teachers));
+    populateSelect("m_teacher", sortedTeachers);
 
+    // ======================
     // Makeup form
+    // ======================
     populateSelect("k_time", uniq(d.times));
     populateSelect("k_room", uniq(d.rooms));
     populateSelect("k_course", sortedCourses);
-    populateSelect("k_teacher", uniq(d.teachers));
+    populateSelect("k_teacher", sortedTeachers);
 
   } catch (e) {
     console.error("Routine load failed", e);
@@ -413,4 +424,3 @@ function autoFillMakeup(day, time, room) {
   qid("k_room").value = room;
   alert(`Selected: ${day} | ${time} | ${room}`);
 }
-
