@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbx56gBiRlsInRDPlxKF_TqRh5qapl_c78eNwhS1feE4r9eDxEoOntf_fBSadQHudVYwqw/exec";
+  "https://script.google.com/macros/s/AKfycby3k51X3fOA8T1pB7SLaeEFajJTWI8NlPG1xQt6waO1imqzVH5vum8hYFRXDVHQM08i4A/exec";
 
 // ========== USER LOGIN (ONE TIME) ==========
 let userEmail = localStorage.getItem("loggedEmail");
@@ -93,15 +93,16 @@ window.addEventListener("DOMContentLoaded", async () => {
   await ensureUserEmail();
   await checkMissedPermission();
 
-  if (qid("appRoot")) qid("appRoot").style.display = "block";
-  if (qid("loginScreen")) qid("loginScreen").style.display = "none";
+  qid("loginScreen")?.remove();
+  qid("appRoot").style.display = "block";
 
+  bindForms();
   loadDashboard();
   refreshRoutineDropdowns();
   loadPendingMakeup();
-  bindForms();
 
-  qid("pendingTeacherSearch")?.addEventListener("input", filterPendingTable);
+  qid("pendingTeacherSearch")
+    ?.addEventListener("input", filterPendingTable);
 });
 
 /* =========================================================
@@ -230,35 +231,48 @@ function bindForms() {
 }
 
 /* =========================================================
-   SAVE MAKEUP
+   SAVE MAKEUP (FIXED — NO PAGE RELOAD)
 ========================================================= */
-async function submitMakeup(e) {
+async function submitMakeup(e){
   e.preventDefault();
 
+  const btn = e.target.querySelector("button[type='submit']");
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+
   const payload = new URLSearchParams({
-    action: "save_makeup",
-    scheduleDate: formatDateISO(qid("k_schedule").value),
-    department: qid("k_dept").value,
-    course: qid("k_course").value,
-    teacherInitial: qid("k_teacher").value,
-    makeupDate: formatDateISO(qid("k_date").value),
-    makeupTime: qid("k_time").value,
-    makeupRoom: qid("k_room").value,
-    status: qid("k_status").value,
-    remarks: qid("k_remarks").value.trim()
+    action:"save_makeup",
+    scheduleDate:qid("k_schedule").value,
+    department:qid("k_dept").value,
+    course:qid("k_course").value,
+    teacherInitial:qid("k_teacher").value,
+    makeupDate:qid("k_date").value,
+    makeupTime:qid("k_time").value,
+    makeupRoom:qid("k_room").value,
+    status:qid("k_status").value,
+    remarks:qid("k_remarks").value
   });
 
-  const res = await fetch(API_URL, { method: "POST", body: payload })
-    .then(r => r.json());
+  try{
+    const res = await fetch(API_URL,{method:"POST",body:payload})
+      .then(r=>r.json());
 
-  if (res.status === "success") {
-    alert("Makeup class entry saved successfully.");
-    e.target.reset();
-    loadPendingMakeup();
-    loadDashboard();
-  } else {
-    alert(res.message || "Failed to save makeup class entry.");
+    if(res.status==="success"){
+      alert(res.message);
+      e.target.reset();
+      loadDashboard();
+      loadPendingMakeup();
+    }else{
+      alert(res.message||"Failed to save");
+    }
+
+  }catch(err){
+    console.error(err);
+    alert("Server error.");
   }
+
+  btn.disabled=false;
+  btn.textContent="Save Makeup Class";
 }
 
 /* =========================================================
