@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbw2n2H7OE39eQvOSCFEvsBr502HLjBv-tYzmx4qDXX2RTzkVosXx2ppC0z4fBlLQ4oyvA/exec";
+  "";
 
 // ========== USER LOGIN (ONE TIME) ==========
 let userEmail = localStorage.getItem("loggedEmail");
