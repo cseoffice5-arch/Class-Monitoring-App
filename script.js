@@ -1,7 +1,7 @@
 /* =========================================================
    CONFIG
 ========================================================= */
-const API_URL = https://script.google.com/macros/s/AKfycbwwtUWXjXfZemCim0tOvlubkxZ9SdOoa0CbC-KTx-WEjLILO6LiHT3FqoaKv1KXT8YmrA/exec
+const API_URL =
   "";
 
 // ========== USER LOGIN (ONE TIME) ==========
